@@ -1,11 +1,10 @@
 import React from 'react';
-import { Button } from 'antd';
+// import { Button } from 'antd';
 import './App.less';
+import Login from './pages/login/Login'
 function App() {
   return (
-    <div className="App">
-    <Button type="primary">Button</Button>
-  </div>
+<Login/>
   );
 }
 
