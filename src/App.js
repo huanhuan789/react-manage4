@@ -2,17 +2,16 @@ import React from 'react';
 // import { Button } from 'antd';
 import './App.less';
 import Login from './pages/login/Login';
-import Admin from './pages/admin/Admin';
-import {HashRouter, Switch, Route} from 'react-router-dom'
+import Manage from './pages/manage/Manage';
+import {BrowserRouter, Switch, Route} from 'react-router-dom'
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Switch>{/* 只匹配其中一个路由 */}
         <Route path='/' component={Login} />
-        <Route path='/admin' component={Admin} />
+        <Route path='/Manage' component={Manage} />
       </Switch>
-
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

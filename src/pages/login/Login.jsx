@@ -1,15 +1,28 @@
 import React from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './Login.less'
-import {login, getAdminInfo} from '../../api/getData'
-function Login() {
-  const onFinish = values => {
+// import {reqLogin} from '../../api/index'
+import { login, getAdminInfo } from '../../api/getData'
+function Login(props) {
+  console.log(props)
+  const onFinish =async (values) => {
     console.log('Received values of form: ', values);
-    const username=values.username;
-    const password=values.password
-    console.log('用户名',username)
-    console.log('密码',password)
+    const username = values.username;
+    const password = values.password
+    console.log('用户名', username)
+    console.log('密码', password)
+    const result=await login({user_name: username, password:password})
+    if (result.status == 1) {
+      message.success('登陆成功');
+     props.history.replace('/Manage')
+    }else{
+      message.error(result.message);
+    }
+
+  }
+  const onFinishFailed = errorInfo => {
+    console.log('Failed:', errorInfo);
   };
   return (
     <div className="login_page fillcontain">

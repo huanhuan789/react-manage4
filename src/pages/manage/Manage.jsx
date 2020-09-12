@@ -1,10 +1,10 @@
 import React from 'react';
 // 后台管理的路由组件
-function Admin(){
+function Manage(){
     return(
         <div>
-            Admin
+            Manage
         </div>
     )
 }
-export default Admin
+export default Manage
