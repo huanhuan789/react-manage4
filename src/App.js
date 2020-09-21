@@ -4,15 +4,23 @@ import './App.less';
 import Login from './pages/login/Login';
 import Manage from './pages/manage/Manage';
 import {BrowserRouter, Switch, Route} from 'react-router-dom'
+// import { Router, Route, hashHistory } from 'react-router-dom';
 function App() {
   return (
     <BrowserRouter>
       <Switch> {/*只匹配其中一个路由  */}
       {/* /* exact精确匹配 */}
-        <Route path='/' exact component={Login} />
-        <Route path='/Manage'    component={Manage} />
+        <Route path='/login'  exact component={Login} />
+        <Route path='/'  component={Manage} />
       </Switch> 
    </BrowserRouter>
+//   <Router history={hashHistory}>
+//       <Switch> {/*只匹配其中一个路由  */}
+//       {/* /* exact精确匹配 */}
+//         <Route path='/' exact component={Login} />
+//         <Route path='/Manage'    component={Manage} />
+//       </Switch> 
+// </Router>
   );
 }
 

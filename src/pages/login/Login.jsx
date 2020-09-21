@@ -30,15 +30,14 @@ function Login(props) {
       localUtils.user = adminInfo.data
       console.log(result)
       console.log(adminInfo)
-      // 如果有用户信息，自动跳转到管理界面
+      // 如果有用户信息，跳转到管理界面
       const user = localUtils.user
       console.log(user.id)
       if (user&&user.id) {
         // setShow(false)
-        // return <Redirect  to='/Manage' />
+        // return <Redirect  to='/' />
         // console.log(show)
-                //登陆成功跳转页面
-       props.history.replace('/Manage')
+       props.history.replace('/')
       }
 
       // if (show === false) {
@@ -50,6 +49,7 @@ function Login(props) {
     }
 
   }
+ 
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };

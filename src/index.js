@@ -8,7 +8,6 @@ import localUtils from './config/localUtils'
 const user=getStore('user')
 console.log(user)
 localUtils.user=user
-
 ReactDOM.render(
     <App />,
   document.getElementById('root')

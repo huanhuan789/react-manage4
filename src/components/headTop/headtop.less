@@ -1,6 +1,17 @@
-.HeadTop{
-    height: 50px;
-    background-color:#f0f2f5;
-    padding:0;
-
+@import '../../style/mixin.less';
+.header_container{
+    background-color: #f0f2f5;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+}
+.avator{
+    .wh(36px, 36px);
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.el-dropdown-menu__item{
+    text-align: center;
 }
