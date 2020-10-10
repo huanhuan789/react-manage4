@@ -45,7 +45,7 @@ function ShopList(props) {
   const [city, setCity] = useState({})
   const [offset, setOffset] = useState(0)
   const [limit, setLimit] = useState(20)
-  const [count,setcount]=useState(0)
+  let [count,setcount]=useState(0)
   let [selectTable,setselectTable]=useState({})
   const [ dialogFormVisible,setdialogFormVisible]=useState(false)
   const [categoryOptions,setcategoryOptions]=useState([])
@@ -54,9 +54,9 @@ function ShopList(props) {
   // 修改框是否可见
   const [visible, setvisible] = useState(false)
   // 异步获取商家列表
-  const gettableData = async () => {
+  const getRes = async () => {
     const { latitude, longitude } = city;
-    const restaurants = await getResturants({ latitude, longitude, offset: offset ,limit: limit});
+    const restaurants = await getResturants({ latitude, longitude});
     console.log(restaurants)
     const tableData = restaurants;
     // 加key
@@ -84,7 +84,7 @@ function ShopList(props) {
       if (countData.status == 1) {
          count = countData.count;
       }
-      getResturants();
+      getRes();
 
 }
   
@@ -142,7 +142,7 @@ function ShopList(props) {
   // (组件第一次渲染完成，每次组件更新执行) 发送接口请求  执行异步任务 获取列表
   useEffect(() => {
     // initData()
-    gettableData()
+    getRes()
     console.log(tableData)
   }, [])
   // 点击编辑
@@ -192,7 +192,9 @@ props.history.replace({patnname:'/addgoods',query:{ restaurant_id: tableData.id 
       columns={columns}
       // key={index}
       expandable={{
-        expandedRowRender: record => <div class="demo-table-expand"> <p style={{ margin: 0 }}>店铺描述 {record.description}</p>
+        expandedRowRender: record =>
+         <div >
+           <p style={{ margin: 0 }}>店铺描述 {record.description}</p>
           <p style={{ margin: 0 }}>店铺名称 {record.name}</p>
           <p style={{ margin: 0 }}>店铺地址 {record.address}</p>
           <p style={{ margin: 0 }}>ID {record.id}</p>

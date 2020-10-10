@@ -67,7 +67,7 @@ function AdminList(){
     return  (
         <div>
             <Table
-      rowKey='id'
+      rowKey='index'
       size='small'
       // 分页每页20个
       pagination={{ defaultPageSize: 20 }}
