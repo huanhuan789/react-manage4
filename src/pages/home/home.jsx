@@ -26,7 +26,7 @@ function Home(){
       }, [])
     const initData=async()=>{
         const today = dtime().format('YYYY-MM-DD')
-        Promise.all([userCount(today), orderCount(today), adminDayCount(today), getUserCount(), getOrderCount(), adminCount()])
+        Promise.all([setuserCount(today), setorderCount(today), setadminDayCount(today), getUserCount(), getOrderCount(), adminCount()])
         .then(res => {
            userCount = res[0].count;
             orderCount = res[1].count;
@@ -60,7 +60,7 @@ function Home(){
     }
     return(
         <div className='home'>
-            <TedEncy sevenDate={sevenDate}  sevenDay={sevenDay}/>
+            {/* <TedEncy sevenDate={sevenDate}  sevenDay={sevenDay}/> */}
         </div>
     )
 }
