@@ -115,6 +115,7 @@ const TedEncy = (props) => {
     };
     myChart.setOption(option);
   };
+  // 数据变化 执行函数
   useMemo(() => {
     if (document.getElementById("line1")) {
       initData();

@@ -1,3 +1,5 @@
+import { title } from "echarts/lib/theme/dark"
+
 const menuList = [
     {
       title: '首页', // 菜单标题名称
@@ -33,7 +35,7 @@ const menuList = [
   
     {
       title: '添加数据',
-      key: '/user',
+      key: 'sub2',
       children:[
         {
             title: '添加商铺',
@@ -46,18 +48,31 @@ const menuList = [
       ]
     },
     {
-      title: '用户分布',
-      key: '/visitorpie',
+      title: '图表',
+      key: '/sub3',
+      children:[{
+        title:'用户分布',
+        key:'/visitor'
+      }  
+      ]
     },
-  
     {
-      title: '文本编辑',
-      key: '/ediet'
+      title: '编辑',
+      key: 'sub4',
+      children:[{
+        title:'文本编辑',
+        key:'/ediet'
+      }  
+      ]
     },
-  
     {
-      title: '管理员设置',
-      key: '/adminset'
+      title: '设置',
+      key: 'sub5',
+      children:[{
+        title:'管理员设置',
+        key:'/adminset'
+      }  
+      ]
     },
   ]
   

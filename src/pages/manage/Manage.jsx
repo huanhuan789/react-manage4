@@ -18,6 +18,7 @@ import  AdminList from '../adminlist/adminList'
 import AdminSet from '../adminset/adminSet'
 import FoodList from '../foodlist/foodLst'
 import Home from '../home/home'
+import Visitor from '../visitior/visitor'
 import OderList from '../oderlist/oderList' 
 import ShopList from '../shoplist/shopList'
 import UserList from '../userlist/userList'
@@ -75,7 +76,7 @@ const onCollapse = collapsed => {
               <Menu.Item key="9"><Link to="/addgoods">添加商品</Link></Menu.Item>
             </SubMenu>
             <SubMenu key="sub3"  title="图表">
-              <Menu.Item key="10"><Link to="/visitorpie">用户分布</Link></Menu.Item>
+              <Menu.Item key="10"><Link to="/visitor">用户分布</Link></Menu.Item>
             </SubMenu>
             <SubMenu key="sub4"  title="编辑">
               <Menu.Item key="11"><Link to="/ediet">文本编辑</Link></Menu.Item>
@@ -101,7 +102,7 @@ const onCollapse = collapsed => {
                     <Route exact path='/oderlist' component={OderList}/>
                     <Route exact path='/shoplist' component={ShopList}/>
                     <Route exact path='/ediet' component={Ediet}/>   
-                    <Route exact path='/visitorpie' component={VisitorPie}/>   
+                    <Route exact path='/visitor' component={Visitor}/>   
                     <Route exact path='/userList' component={UserList}/>          
           </Content>
         </Layout>

@@ -15,7 +15,7 @@ import {
     Switch,
 } from 'antd';
 
-function AddGoods() {
+function AddGoods(props) {
     const [restaurant_id, setrestaurant_id] = useState(1)
     const [categoryForm, setcategoryForm] = useState({
         categoryList: [],
@@ -90,9 +90,10 @@ function AddGoods() {
     }
     // // (组件第一次渲染完成，每次组件更新执行) 发送接口请求  执行异步任务 获取数据
     useEffect(() => {
+        console.log(props)
         initData()
         console.log(categoryForm.categoryList)
-    }, [])
+    }, [props])
     return (
         <div>
             <div style={{ marginTop: 20 }}>
