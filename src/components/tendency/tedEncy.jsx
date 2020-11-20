@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useEffect } from "react";
+import "./tedEncy.less"
 // 引入ECharts主模块
 import echarts from "echarts/lib/echarts";
 //引入柱状图
@@ -9,7 +10,6 @@ import "echarts/lib/component/legend";
 import "echarts/lib/component/toolbox";
 import "echarts/lib/component/markPoint";
 import "echarts/lib/component/tooltip";
-//
 const TedEncy = (props) => {
   const initData = () => {
     const myChart = echarts.init(document.getElementById("line1"));
@@ -116,9 +116,10 @@ const TedEncy = (props) => {
     myChart.setOption(option);
   };
   // 数据变化 执行函数
-  useMemo(() => {
+  useEffect(() => {
     if (document.getElementById("line1")) {
       initData();
+      console.log(props.sevenDay,props.sevenDate)
     }
   }, [props]);
 

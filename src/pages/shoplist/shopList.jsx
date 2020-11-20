@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Button, Modal } from 'antd';
+import { Table, Tag, Space, Button, Modal, Popconfirm } from 'antd';
 import './shopList.less'
 import { cityGuess, getResturants, getResturantsCount, foodCategory, updateResturant, searchplace, deleteResturant } from '../../api/getData'
 
@@ -29,16 +29,26 @@ function ShopList(props) {
       title: '操作',
       width: 300,
       key: 'action',
-      render: (tableData) => (
-        <Space size="small" >
-          <Button onClick={() => handleEdit(tableData)}>编辑</Button>
-          {/* <Button onClick={()=>handleEdit()}>编辑</Button> */}
-          <Button onClick={() => addGoods(tableData)}>添加食品</Button>
-          <Button onClick={() => handleDelete(tableData)} type="primary" danger>
-            删除
-      </Button>
-        </Space>
-      ),
+      align:'center',
+
+      render: (txt, record, index) => {
+        return (
+          <div>
+            <Button  size="small" onClick={() => handleEdit(tableData)} >编辑</Button>
+            {/* <Button onClick={()=>handleEdit()}>编辑</Button> */}
+            <Button style={{margin:"0 1rem"}} size="small" onClick={() => addGoods(tableData)}>添加食品</Button>
+            <Popconfirm title="确定删除此项？" 
+            onCancel={()=>console.log('用户点击取消')} 
+            onConfirm={() => handleDelete(tableData)}>
+            <Button  type="danger" size="small">
+              删除
+            </Button>
+            </Popconfirm>
+
+          </div>
+ 
+        );
+      }
     },
   ];
   let [tableData, settableData] = useState([])//一级分类列表
@@ -171,7 +181,7 @@ function ShopList(props) {
   // 点击添加食品
   const addGoods = (index, record) => {
     // 进入添加食品路由页面
-    props.history.replace({ pathname: '/addgoods', query: { restaurant_id: record.id } })
+    props.history.replace({ pathname: '/addgoods'})
   }
 
   return (

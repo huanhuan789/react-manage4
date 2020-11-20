@@ -31,18 +31,18 @@ function UserList(){
         },
       ];
     //   异步获取用户数量
-    const initData=async()=>{
-            const countData = await getUserCount();
-            console.log(countData)
-            if (countData.status == 1) {
-               count = countData.count;
-               userDate();
-            }
-    }
+    // const initData=async()=>{
+    //         const countData = await getUserCount();
+    //         console.log(countData)
+    //         if (countData.status == 1) {
+    //            count = countData.count;
+    //            userDate();
+    //         }
+    // }
       //异步获取用户列表
       const userDate= async()=>{
-          const Users= await getUserList({offset: offset});
-          const tableData = Users;
+         const Users= await getUserList();
+           tableData = Users;
         //   tableData = [];
         //   Users.forEach(item => {
         //    let tableData = [];
@@ -57,8 +57,8 @@ function UserList(){
         settableData(tableData);
       }
       useEffect(() => {
-        initData()
-        // userDate()
+        // initData()
+        userDate()
         console.log(tableData)
       }, [])
     return  (

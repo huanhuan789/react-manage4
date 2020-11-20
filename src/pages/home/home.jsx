@@ -30,7 +30,7 @@ function Home () {
             getOrderCount(),
             adminCount()
         ]).then(res => {
-            console.log(res)
+            // console.log(res)
             setUserCount(res[0].count);
             setOrderCount(res[1].count);
             setAdminCount(res[2].count);
@@ -42,9 +42,9 @@ function Home () {
         });
     },
         getSevenDate = async () => {
-            console.log(sevenDay)
-            console.log(userCount)
-            console.log(userCount)
+            // console.log(sevenDay)
+            // console.log(userCount)
+            // console.log(userCount)
             const apiArr = [[], [], []];
             sevenDay.forEach(item => {
                 apiArr[0].push(userCount(item))
@@ -52,8 +52,8 @@ function Home () {
                 apiArr[2].push(adminDayCount(item))
             })
             const promiseArr = [...apiArr[0], ...apiArr[1], ...apiArr[2]]
-            console.log(...apiArr[0])
-            console.log(apiArr)
+            // console.log(...apiArr[0])
+            // console.log(apiArr)
             Promise.all(promiseArr).then(res => {
                 const resArr = [[], [], []];
                 res.forEach((item, index) => {
@@ -76,36 +76,38 @@ function Home () {
         setSevenDay(sevenDay);
         getSevenDate();
         console.log(_userCount);
-    })
+        console.log(sevenDate)
+        console.log(sevenDay)
+    },[])
     return (
         <div className="home">
             <section className="data_section">
                 <header className="section_title">数据统计</header>
                 <Row gutter={20} style={{ marginBottom: '10px' }} >
-                    <Col span={5}>
+                    <Col span={4}>
                         <div className="data_list today_head"><span className="data_num head">当日数据：</span></div>
                     </Col>
-                    <Col  span={5}>
+                    <Col  span={4}>
                         <div className="data_list"><span className="data_num">{[_userCount]}</span> 新增用户</div>
                     </Col>
-                    <Col  span={5}>
+                    <Col  span={4}>
                         <div className="data_list"><span className="data_num">{[_orderCount]}</span> 新增订单</div>
                     </Col>
-                    <Col span={5}>
+                    <Col span={4}>
                         <div className="data_list"><span className="data_num">{[_adminCount]}</span> 新增管理员</div>
                     </Col>
                 </Row>
                 <Row gutter={20} >
-                    <Col  span={6}>
+                    <Col  span={4}>
                         <div className="data_list all_head"><span className="data_num head">总数据：</span></div>
                     </Col>
-                    <Col  span={6}>
+                    <Col  span={4}>
                         <div className="data_list"><span className="data_num">{[_allUserCount]}</span>注册用户</div>
                     </Col>
-                    <Col span={6}>
+                    <Col span={4}>
                         <div className="data_list"><span className="data_num">{[_allOrderCount]}</span> 订单</div>
                     </Col>
-                    <Col span={6}>
+                    <Col span={4}>
                         <div className="data_list"><span className="data_num">{[_allAdminCount]}</span> 管理员</div>
                     </Col>
                 </Row>
