@@ -75,7 +75,7 @@ function Home () {
         }
         setSevenDay(sevenDay);
         getSevenDate();
-        console.log(_userCount);
+        // console.log(_userCount);
         console.log(sevenDate)
         console.log(sevenDay)
     },[])

@@ -11,7 +11,7 @@ function Login(props) {
   // const [show, setShow] = useState(true);
   console.log(props)
   const onFinish = async (values) => {
-   
+   if(values){
     console.log('Received values of form: ', values);
     const username = values.username;
     const password = values.password
@@ -48,10 +48,16 @@ function Login(props) {
       message.error(result.message);
     }
 
+  } 
   }
  
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
+    message.error({
+      title: '错误',
+      message: '请输入正确的用户名密码',
+      offset: 100
+    });
   };
   return (
     <div className="login_page fillcontain">
@@ -65,6 +71,7 @@ function Login(props) {
             className="login-form"
             initialValues={{ remember: true }}
             onFinish={onFinish}
+            onFinishFailed ={onFinishFailed }
           >
             <Form.Item
               name="username"

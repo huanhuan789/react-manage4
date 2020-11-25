@@ -199,6 +199,7 @@ function AddGoods(props) {
             })
             categoryForm.categoryList = result.category_list;
             console.log(categoryForm.categoryList)
+            setcategoryForm(categoryForm.categoryList)
         } else {
             console.log(result)
         }
@@ -240,7 +241,7 @@ function AddGoods(props) {
     useEffect(() => {
         console.log(props)
         initData()
-        console.log(categoryForm.categoryList)
+        // console.log(categoryForm.categoryList)
     }, [props])
 
     const format = 'HH:mm';
@@ -261,7 +262,9 @@ function AddGoods(props) {
                     <div className='category_select'>
                         <Form.Item label="食品种类">
                             <Select style={{ width: "100%" }}>
-                                <Select.Option value=""></Select.Option>
+                                {categoryForm.categoryList.map(item => (
+                                    <Option key={item.value}>{item.value}</Option>
+                                ))}
                             </Select>
                         </Form.Item>
                     </div>
@@ -363,17 +366,17 @@ function AddGoods(props) {
                     cancelText='取消'
                     onCancel={() => setdialogFormVisible(false)}
                 >
-                  <Form rules={specsFormrules} onChange={()=>setspecsForm(specsForm)}>
-                  <Form.Item label="规格"  lable-width='100px'  >
-                            <Input onChange={()=>setspecsForm(specsForm.specs)} auto-complete={'off'}/>
+                    <Form rules={specsFormrules} onChange={() => setspecsForm(specsForm)}>
+                        <Form.Item label="规格" lable-width='100px'  >
+                            <Input onChange={() => setspecsForm(specsForm.specs)} auto-complete={'off'} />
                         </Form.Item>
-                        <Form.Item label="包装费"  lable-width='100px'  >
-                            <InputNumber min={0} max={100} onChange={()=>setspecsForm(specsForm.packing_fee)} />
+                        <Form.Item label="包装费" lable-width='100px'  >
+                            <InputNumber min={0} max={100} onChange={() => setspecsForm(specsForm.packing_fee)} />
                         </Form.Item>
                         <Form.Item label="价格" lable-width='100px'   >
-                            <InputNumber min={0} max={10000} onChange={()=>setspecsForm(specsForm.specsForm.price)} />
+                            <InputNumber min={0} max={10000} onChange={() => setspecsForm(specsForm.specsForm.price)} />
                         </Form.Item>
-                  </Form>
+                    </Form>
                 </Modal>
             </div>
 
