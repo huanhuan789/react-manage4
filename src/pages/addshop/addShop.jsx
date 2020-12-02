@@ -18,7 +18,6 @@ import {
   Popconfirm
 } from 'antd';
 import { TimePicker } from 'antd';
-
 import moment from 'moment';
 import { Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
@@ -136,8 +135,8 @@ function AddShop() {
     name: '满减优惠',
     description: '满30减5，满60减8',
   }])
-  const [baseUrl, setBaseUrl] = useState('')
-  const [baseImaPath, setBaseImaPath] = useState('')
+  // const [baseUrl, setBaseUrl] = useState('')
+  // const [baseImgPath, setBaseImgPath] = useState('')
   const [categoryOptions, setCategoryOptions] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(['快餐便当', '简餐'])
   const [form] = Form.useForm();
@@ -147,7 +146,8 @@ function AddShop() {
   //食品分类
   const initData = async () => {
     // const  citymessa = await cityGuess();
-    // console.log(city)
+    // console.log(citymessa)
+
     const categories = await foodCategory();
     categories.forEach(item => {
       if (item.sub_categories.length) {
@@ -174,26 +174,76 @@ function AddShop() {
 
   }
   //  上传图片
-  const handleChange = info => {
+  const handleShopAvatarScucess =(info)=> {
+    console.log(info)
     if (info.file.status === 'uploading') {
-      setLoading(true);
-      return;
+        console.log(info)
+        setLoading(true);
+        return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl => {
-        setLoading(false);
-        setImgUrl(imageUrl);
-      }
-      );
-    };
-  };
+        // Get this url from response in real world.
+        getBase64(info.file.originFileObj, imageUrl => {
+            setLoading(false);
+           
+            console.log(info)
+            formData.image_path =imageUrl ;
+
+        }
+        );
+    }else{
+      message.error('上传图片失败！')
+    }
+  }
+  const handleBusinessAvatarScucess =(info)=> {
+    console.log(info)
+    if (info.file.status === 'uploading') {
+        console.log(info)
+        setLoading(true);
+        return;
+    }
+    if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        getBase64(info.file.originFileObj, imageUrl => {
+            setLoading(false);
+           
+            console.log(info)
+            formData.business_license_image = imageUrl ;
+
+        }
+        );
+    }else{
+      message.error('上传图片失败！')
+    }
+  }
+  const handleServiceAvatarScucess =(info)=> {
+    console.log(info)
+    if (info.file.status === 'uploading') {
+        console.log(info)
+        setLoading(true);
+        return;
+    }
+    if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        getBase64(info.file.originFileObj, imageUrl => {
+            setLoading(false);
+           
+            console.log(info)
+            formData.catering_service_license_image = imageUrl ;
+
+        }
+        );
+    }else{
+      message.error('上传图片失败！')
+    }
+  }
   const uploadButton = (
     <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>上传</div>
+        {loading ? <LoadingOutlined /> : <PlusOutlined />}
+        <div style={{ marginTop: 8 }}>上传</div>
     </div>
-  );
+);
+ 
   const format = 'HH:mm';
   // 优惠活动 弹出函数
   const selectActivity = async () => {
@@ -207,58 +257,60 @@ function AddShop() {
   // const submitForm = () => {
 
   // }
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     if (values) {
       console.log('Received values of form: ', values);
-      //   let result = await addShop(formData);
-      //   if (result.status == 1) {
-      //     message.success('添加成功');
-      //       formData = {
-      //       name: '', //店铺名称
-      //       address: '', //地址
-      //       latitude: '',
-      //       longitude: '',
-      //       description: '', //介绍
-      //       phone: '',
-      //       promotion_info: '',
-      //       float_delivery_fee: 5, //运费
-      //       float_minimum_order_amount: 20, //起价
-      //       is_premium: true,
-      //       delivery_mode: true,
-      //       new: true,
-      //       bao: true,
-      //       zhun: true,
-      //       piao: true,
-      //       startTime: '',
-      //             endTime: '',
-      //             image_path: '',
-      //             business_license_image: '',
-      //             catering_service_license_image: '',
-      //         };
-      //         selectedCategory = ['快餐便当', '简餐'];
-      //        activities = [{
-      //           icon_name: '减',
-      //           name: '满减优惠',
-      //           description: '满30减5，满60减8',
-      //       }];
-      //   }else {
-      //     message.error(result.message);
-      //   }
-      // } 
+      Object.assign(formData, { activities }, {
+        category: selectedCategory.join('/')
+      })
+      let result = await addShop(formData);
+      console.log(result)
+      if (result.status == 1) {
+        message.success('添加成功');
+        formData = {
+          name: '', //店铺名称
+          address: '', //地址
+          latitude: '',
+          longitude: '',
+          description: '', //介绍
+          phone: '',
+          promotion_info: '',
+          float_delivery_fee: 5, //运费
+          float_minimum_order_amount: 20, //起价
+          is_premium: true,
+          delivery_mode: true,
+          new: true,
+          bao: true,
+          zhun: true,
+          piao: true,
+          startTime: '',
+          endTime: '',
+          image_path: '',
+          business_license_image: '',
+          catering_service_license_image: '',
+        };
+        selectedCategory = ['快餐便当', '简餐'];
+        activities = [{
+          icon_name: '减',
+          name: '满减优惠',
+          description: '满30减5，满60减8',
+        }];
+      } else {
+        message.error(result.message);
+        console.log(result.message)
+      }
     }
   };
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
-    // message.error({
-    //   title: '错误',
-    //   message: '请检查输入是否正确',
-    //   offset: 100
-    // });
+    message.error('请检查输入是否正确');
   };
   useEffect(() => {
+    // setSelectedCategory(selectedCategory)
     initData();
     console.log(categoryOptions)
   }, [])
+
   return (
     <div>
       <Form
@@ -282,8 +334,8 @@ function AddShop() {
           rules={[{ required: true, message: '请输入详细地址' }]}>
           <Input />
         </Form.Item>
-        <span>当前城市：{city.name}</span>
-      {/* transform将字段值转换成目标值后进行校验 */}
+        <div style={{ marginLeft: '250px' }}>当前城市：{city.name}</div>
+        {/* transform将字段值转换成目标值后进行校验 */}
         <Form.Item label="联系电话" name="phone"
           rules={[{ required: true, message: '请输入联系电话' },
           {
@@ -294,9 +346,7 @@ function AddShop() {
 
               }
             }
-            },
-            
-            
+          },
           ]}>
           <Input />
         </Form.Item>
@@ -308,6 +358,7 @@ function AddShop() {
         </Form.Item>
         <Form.Item label="店铺分类" name="category" >
           <Cascader
+            defaultValue={selectedCategory}
             options={categoryOptions}
           />
         </Form.Item>
@@ -340,17 +391,43 @@ function AddShop() {
           <TimePicker placeholder="结束时间"
             format={format} />
         </Form.Item>
-        {/* <Form.Item label="上传店铺头像"  >
+        <Form.Item label="上传店铺头像"  >
           <Upload
             name="avatar"
             listType="picture-card"
             className="avatar-uploader"
             showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            action={baseUrl + '/v1/addimg/shop'}
             beforeUpload={beforeUpload}
-            onChange={handleChange}
+            onChange={info=>handleShopAvatarScucess(info)}
           >
-            {url ? <img src={url} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+            {formData.image_path ? <img src={baseImgPath + formData.image_path} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+          </Upload>
+        </Form.Item>
+        <Form.Item label="上传营业执照"  >
+          <Upload
+            name="avatar"
+            listType="picture-card"
+            className="avatar-uploader"
+            showUploadList={false}
+            action={baseUrl + '/v1/addimg/shop'}
+            beforeUpload={beforeUpload}
+            onChange={info=>handleBusinessAvatarScucess(info)}
+          >
+            {formData.business_license_image ? <img src={baseImgPath + formData.business_license_image} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+          </Upload>
+        </Form.Item>
+        <Form.Item label="上传餐饮服务许可证"  >
+          <Upload
+            name="avatar"
+            listType="picture-card"
+            className="avatar-uploader"
+            showUploadList={false}
+            action={baseUrl + '/v1/addimg/shop'}
+            beforeUpload={beforeUpload}
+            onChange={info=>handleServiceAvatarScucess(info)}
+          >
+            {formData.catering_service_license_image ? <img src={baseImgPath + formData.catering_service_license_image} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
           </Upload>
         </Form.Item>
         <Form.Item label="优惠活动"  >
@@ -359,8 +436,9 @@ function AddShop() {
               <Option key={item.value}>{item.value}</Option>
             ))}
           </Select>
-        </Form.Item> */}
+        </Form.Item>
         <Table
+          bordered
           rowKey='id'
           // onRow={(record,index)=>{
           // return{
@@ -375,8 +453,9 @@ function AddShop() {
           columns={columns}
           // key={index}
           dataSource={activities}
+          pagination={false}
         />
-        <Form.Item className="button_submit">
+        <Form.Item className="button_submit" >
           <Button type="primary" htmlType="submit" >立即创建</Button>
         </Form.Item>
       </Form>

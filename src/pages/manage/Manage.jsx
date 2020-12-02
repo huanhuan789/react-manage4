@@ -92,15 +92,15 @@ const onCollapse = collapsed => {
           <Content style={{ margin: '0 16px' }} key={props.location.key}>
               {/* 子路由组件 */}
              
-                  <Redirect  from='/'  to='/home' />
+                  <Redirect  exact from='/'  to='/home' />
                     <Route  exact path='/home'  component={Home}/>
-                    <Route exact path='/addgoods' component={AddGoods}/>
+                    <Route exact path='/addgoods/:restaurant_id?' component={AddGoods}/>
                     <Route exact path='/addshop' component={AddShop}/>
                     <Route exact path='/adminlist' component={AdminList}/>
                     <Route exact path='/adminset' component={AdminSet}/>
                     <Route exact path='/foodlist' component={FoodList}/>
                     <Route exact path='/oderlist' component={OderList}/>
-                    <Route exact path='/shoplist' component={ShopList}/>
+                    <Route exact path='/shoplist/' component={ShopList}/>
                     <Route exact path='/ediet' component={Ediet}/>   
                     <Route exact path='/visitor' component={Visitor}/>   
                     <Route exact path='/userList' component={UserList}/>          

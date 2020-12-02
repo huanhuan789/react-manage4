@@ -6,7 +6,7 @@ import './Login.less'
 import { login, getAdminInfo } from '../../api/getData'
 import { setStore } from '../../config/mUtils'
 import localUtils from '../../config/localUtils'
-import { Redirect } from 'react-router-dom';
+import { Redirect,withRouter } from 'react-router-dom';
 function Login(props) {
   // const [show, setShow] = useState(true);
   console.log(props)
@@ -53,11 +53,7 @@ function Login(props) {
  
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
-    message.error({
-      title: '错误',
-      message: '请输入正确的用户名密码',
-      offset: 100
-    });
+    message.error( '请输入正确的用户名密码');
   };
   return (
     <div className="login_page fillcontain">
@@ -105,4 +101,4 @@ function Login(props) {
   );
 }
 
-export default Login;
+export default withRouter(Login);

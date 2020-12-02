@@ -32,11 +32,11 @@ function getBase64(img, callback) {
 function beforeUpload(file) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
+        message.error('上传头像图片只能是JPG格式!');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
+        message.error('上传头像图片大小不能超过 2MB!');
     }
     return isJpgOrPng && isLt2M;
 }
@@ -87,9 +87,10 @@ function AddGoods(props) {
     const [value, setValue] = React.useState('one');
     const [loading, setLoading] = useState(false)
     const [url, setImgUrl] = useState('')
-    const [baseUrl, setBaseUrl] = useState('')
-    const [baseImgPath, setBaseImaPath] = useState('')
-    const [restaurant_id, setrestaurant_id] = useState(1)
+    // const [baseUrl, setBaseUrl] = useState('')
+    // const [baseImgPath, setBaseImaPath] = useState('')
+    const [restaurant_id, setrestaurant_id] = useState('')
+    const [visible, setVisible] = useState(false)
     const [categoryForm, setcategoryForm] = useState({
         categoryList: [],
         categorySelect: '',
@@ -192,6 +193,8 @@ function AddGoods(props) {
     // 请求食品列表
     const initData = async () => {
         const result = await getCategory(restaurant_id);
+        console.log(restaurant_id)
+        console.log(result)
         if (result.status == 1) {
             result.category_list.map((item, index) => {
                 item.value = index;
@@ -205,8 +208,10 @@ function AddGoods(props) {
         }
     }
     //  上传图片
-    const handleChange = info => {
+    const uploadImg = info => {
+        console.log(info)
         if (info.file.status === 'uploading') {
+            console.log(info)
             setLoading(true);
             return;
         }
@@ -214,7 +219,10 @@ function AddGoods(props) {
             // Get this url from response in real world.
             getBase64(info.file.originFileObj, imageUrl => {
                 setLoading(false);
-                setImgUrl(imageUrl);
+                // setBaseImaPath(imageUrl);
+                console.log(info)
+                foodForm.image_path = imageUrl
+
             }
             );
         }
@@ -239,12 +247,24 @@ function AddGoods(props) {
     }
     // // (组件第一次渲染完成，每次组件更新执行) 发送接口请求  执行异步任务 获取数据
     useEffect(() => {
-        console.log(props)
-        initData()
+        if (props.match.params.restaurant_id) {
+            setrestaurant_id(props.match.params.restaurant_id)
+            console.log(props.match.params.restaurant_id)
+            console.log(props)
+            initData()
+        } else {
+            // restaurant_id = Math.ceil(Math.random() * 10);
+            setVisible(true)
+            console.log(props)
+          
+        }
+      
         // console.log(categoryForm.categoryList)
     }, [props])
-
-    const format = 'HH:mm';
+    const handleOk = () => {
+        props.history.push('/shopList')
+    }
+    // const format = 'HH:mm';
     return (
         <div>
             <div style={{ marginTop: 20 }}>
@@ -262,9 +282,9 @@ function AddGoods(props) {
                     <div className='category_select'>
                         <Form.Item label="食品种类">
                             <Select style={{ width: "100%" }}>
-                                {categoryForm.categoryList.map(item => (
+                                {/* {categoryForm.categoryList.map(item => (
                                     <Option key={item.value}>{item.value}</Option>
-                                ))}
+                                ))} */}
                             </Select>
                         </Form.Item>
                     </div>
@@ -304,11 +324,11 @@ function AddGoods(props) {
                             listType="picture-card"
                             className="avatar-uploader"
                             showUploadList={false}
-                            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                            action={baseUrl + '/v1/addimg/food'}
                             beforeUpload={beforeUpload}
-                            onChange={handleChange}
+                            onChange={(info)=>uploadImg(info)}
                         >
-                            {url ? <img src={url} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                            {foodForm.image_path ? <img src={baseImgPath + foodForm.image_path} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                         </Upload>
                     </Form.Item>
                     <Form.Item label="优惠活动"  >
@@ -365,6 +385,7 @@ function AddGoods(props) {
                     okText='确定'
                     cancelText='取消'
                     onCancel={() => setdialogFormVisible(false)}
+         
                 >
                     <Form rules={specsFormrules} onChange={() => setspecsForm(specsForm)}>
                         <Form.Item label="规格" lable-width='100px'  >
@@ -377,6 +398,17 @@ function AddGoods(props) {
                             <InputNumber min={0} max={10000} onChange={() => setspecsForm(specsForm.specsForm.price)} />
                         </Form.Item>
                     </Form>
+                </Modal>
+                <Modal
+                    title="提示"
+                    visible={visible}
+                    // onOk={handleOk}
+                    // okText='确定'
+                    // onCancel={false}
+                    footer={null}
+                >
+                    <p>添加商品需要选择一个商铺，请先选择商铺</p>
+                    <Button type='primary' onClick={handleOk} style={{marginLeft:'200px',marginTop:'100px'}}>确定</Button>
                 </Modal>
             </div>
 

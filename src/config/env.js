@@ -6,6 +6,7 @@
  * baseImgPath: 图片存放地址
  * 
  */
+// let baseUrl = 'http://localhost:3001'; 
 let baseUrl = ''; 
 let routerMode = 'hash';
 let baseImgPath;

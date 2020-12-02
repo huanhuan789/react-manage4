@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Cascader, Table, Select, Tag, Space, Button, Modal, Popconfirm } from 'antd';
+import { Form, Input, Cascader, Table, Select, Tag, Space, Button, Modal, Popconfirm, AutoComplete } from 'antd';
 import { Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import './shopList.less'
@@ -53,13 +53,47 @@ function ShopList(props) {
       render: (txt, record, index) => {
         return (
           <div>
-            <Button size="small" onClick={() => handleEdit(tableData)} >编辑</Button>
+            <Button size="small" onClick={() => {
+
+              setselectTable(record);
+              address.address = record.address;
+              console.log(record)
+              selectedCategory = record.category.split('/');
+              console.log(selectedCategory)
+              setselectedCategory(selectedCategory)
+              setvisible(true);
+              if (!categoryOptions.length) {
+                getCategory();
+              }
+            }} >编辑</Button>
             {/* <Button onClick={()=>handleEdit()}>编辑</Button> */}
-            <Button style={{ margin: "0 1rem" }} size="small" onClick={() => addGoods(tableData)}>添加食品</Button>
+            <Button style={{ margin: "0 1rem" }} size="small" onClick={() => {
+              props.history.push(`/addgoods/${record.id}`)
+
+              // props.history.push({
+              //   pathname: '/addgoods',
+              //   query: { restaurant_id:record.id },
+              // })
+            }}>添加食品</Button>
             <Popconfirm title="确定删除此项？"
               onCancel={() => console.log('用户点击取消')}
-              onConfirm={() => handleDelete(tableData)}>
-              <Button type="danger" size="small">
+              onConfirm={async () => {
+                try {
+                  const res = await deleteResturant(record.id);
+                  console.log(res)
+                  if (res.status == 1) {
+                    message.success('删除店铺成功');
+                    tableData.splice(index, 1);
+                  } else {
+                    throw new Error(res.message)
+                  }
+                } catch (err) {
+                  message.error(err.message);
+                  console.log('删除店铺失败')
+                }
+
+              }}>
+              <Button type="danger" size="small" >
                 删除
             </Button>
             </Popconfirm>
@@ -71,63 +105,69 @@ function ShopList(props) {
     },
   ];
   let [tableData, settableData] = useState([])//一级分类列表
-  const [city, setCity] = useState({})
+  let [city, setCity] = useState({ name: '南京' })
+  let [cityList, setCityList] = useState([])
+  // 有多少页
   let [offset, setOffset] = useState(0)
+  // 每页限制数据条数
   const [limit, setLimit] = useState(20)
   let [count, setcount] = useState(0)
-  let [currentPage, setCurrentPage] = useState(1)
   let [selectTable, setselectTable] = useState({})
   const [dialogFormVisible, setdialogFormVisible] = useState(false)
   const [categoryOptions, setcategoryOptions] = useState([])
-  const [selectedCategory, setselectedCategory] = useState([])
+  let [selectedCategory, setselectedCategory] = useState([])
   let [address, setaddress] = useState({})
   // 修改框是否可见
   const [visible, setvisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [url, setImgUrl] = useState('')
+  const [baseUrl, setBaseUrl] = useState('')
+  const [baseImgPath, setBaseImgPath] = useState('')
+  const [form] = Form.useForm();
   //异步获取 城市信息 店铺数量--------------
   const initData = async () => {
     try {
-      // city = await cityGuess();
+      //------------------------------------------ city接口504
+      //  let citys = await cityGuess();
+      //  console.log(citys)
       const countData = await getResturantsCount();
       if (countData.status == 1) {
         setcount(count)
         count = countData.count;
         console.log('商铺列表数量', count)
         setcount(count)
-       
-      }else{
+
+      } else {
         throw new Error('获取数据失败');
-    }
-    getRes();
-  }catch(err){
-    console.log('获取数据失败', err);
+      }
+      getRes();
+    } catch (err) {
+      console.log('获取数据失败', err);
     }
   },
-  // 异步获取商家列表----------------[加try catch 加const报错 ]
-  getRes = async () => {
-    const { latitude, longitude } = city;
-    const restaurants = await getResturants({ latitude, longitude, offset: offset, limit: limit });
-    console.log(restaurants)
-    const tableData = restaurants;
-    // 加key
-    // tableData=[]
-    // restaurants.forEach((item,key) => {
-    //   let tableDate = {};
-    //   tableData.name = item.name;
-    //   tableData.address = item.address;
-    //   tableData.description = item.description;
-    //   tableData.id = item.id;
-    //   tableData.phone = item.phone;
-    //   tableData.rating = item.rating;
-    //   tableData.recent_order_num = item.recent_order_num;
-    //   tableData.category = item.category;
-    //   tableData.image_path = item.image_path;
-    //   tableData.push(tableDate)
-    // })
-    settableData(tableData);
-    console.log(tableData)
-  }
+    // 异步获取商家列表----------------[加try catch 加const报错 ]
+    getRes = async () => {
+      const { latitude, longitude } = city;
+      const restaurants = await getResturants({ latitude, longitude, offset: offset, limit: limit });
+      console.log(restaurants)
+      const tableData = restaurants;
+      // 加key
+      // tableData=[]
+      // restaurants.forEach((item,key) => {
+      //   let tableDate = {};
+      //   tableData.name = item.name;
+      //   tableData.address = item.address;
+      //   tableData.description = item.description;
+      //   tableData.id = item.id;
+      //   tableData.phone = item.phone;
+      //   tableData.rating = item.rating;
+      //   tableData.recent_order_num = item.recent_order_num;
+      //   tableData.category = item.category;
+      //   tableData.image_path = item.image_path;
+      //   tableData.push(tableDate)
+      // })
+      settableData(tableData);
+      console.log(tableData)
+    }
 
 
   // 异步获取食品分类
@@ -157,83 +197,78 @@ function ShopList(props) {
     // console.log(tableData)
   }
   // 异步获取删除数据内容 
-  const handleDelete = async (tableData) => {
-    const res = await deleteResturant(tableData.id);
-    if (res.status == 1) {
-      this.$message({
-        type: 'success',
-        message: '删除店铺成功'
-      });
-      tableData.splice(tableData.index, 1);
-    }
+  // const handleDelete = async (txt, record, index) => {
+  //   const res = await deleteResturant(record.id);
+  //   if (res.status == 1) {
+  //     this.$message({
+  //       type: 'success',
+  //       message: '删除店铺成功'
+  //     });
+  //     tableData.splice(index, 1);
+  //   }
+
+  // }
+  // -----------------------------------city接口504   city.id无 
+  const querySearchAsync = async (searchText) => {
+    console.log(searchText)
+    console.log(city.id)
+    cityList = await searchplace(city.id, searchText);
+    setCityList(cityList)
+    console.log(cityList)
 
   }
-  // 异步查询 城市信息
-  const querySearchAsync = async (queryString, cb) => {
-    if (queryString) {
-      const cityList = await searchplace(city.id, queryString);
-      if (cityList instanceof Array) {
-        cityList.map(item => {
-          item.value = item.address;
-          return item;
-        })
-        cb(cityList)
-      }
-    }
+  //地址栏下拉
+  const addressSelect = (vale) => {
+    const { address, latitude, longitude } = vale;
+    address = { address, latitude, longitude };
+    setaddress(address)
   }
-
   // 分页
   const handlePageChange = (val, pageSize) => {
     // 每页条数
     console.log(pageSize)
-    currentPage = val;
+
     offset = (val - 1) * limit;
     // setCurrentPage(currentPage)
     // setOffset(offset)
     getRes()
   }
-  // 点击编辑
-  const handleEdit = (index, record) => {
-    // selectTable = record;
-    // address.address = record.address;
-    // dialogFormVisible = true;
-    // selectedCategory = record.category.split('/');
-    setvisible(true);
-    if (!categoryOptions.length) {
-      getCategory();
-    }
-    // console.log(rowkey, record)
-    // selectTable =tableData;
-    //  address.address= tableData.address;
-    //   dialogFormVisible = true;
-    // selectedCategory = tableData.category.split('/');
-    // if (!categoryOptions.length) {
-    //     getCategory();
-    // }
-    console.log(tableData)
-  };
+
+
   // 编辑框点击确认 将编辑信息提交
-  const handleedietok = (e) => {
+  const handleedietok = async (e) => {
     console.log(e);
     setvisible(false);
-    // selectTable = row;
-    //            address.address = row.address;
-    //          dialogFormVisible = true;
-    //       selectedCategory = row.category.split('/');
-    //             if (!categoryOptions.length) {
-    //               getCategory();
-    //             }
+    try {
+      Object.assign(selectTable, address);
+      console.log(selectedCategory)
+      selectTable.category = selectedCategory.join('/');
+      const res = await updateResturant(selectTable)
+      if (res.status == 1) {
+        message.success('更新店铺信息成功')
+        getRes();
+      } else {
+        message.error(res.message)
+      }
+    } catch (err) {
+      console.log('更新餐馆信息失败', err);
+    }
   };
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+
+  }
   //编辑框点击取消
   const handleCancel = e => {
     console.log(e);
     setvisible(false);
   };
-  // 点击添加食品
-  const addGoods = (index, record) => {
-    // 进入添加食品路由页面
-    props.history.replace({ pathname: '/addgoods' })
-  }
+  // // 点击添加食品
+  // const addGoods = (tableData) => {
+  //   console.log(tableData)
+  //   // 进入添加食品路由页面
+  //   props.history.push(`/addgoods${}`)
+  // }
   //  上传图片
   const handleChange = info => {
     if (info.file.status === 'uploading') {
@@ -244,7 +279,10 @@ function ShopList(props) {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, imageUrl => {
         setLoading(false);
-        setImgUrl(imageUrl);
+        console.log(info)
+        // setImgUrl(imageUrl);
+        // setBaseImgPath(imageUrl);
+        selectTable.image_path =imageUrl ;
       }
       );
     }
@@ -255,17 +293,17 @@ function ShopList(props) {
       <div style={{ marginTop: 8 }}>上传</div>
     </div>
   );
-  const onFinish =(val)=>{
-    console.log(val)
-  }
-  const onFinishFailed=(errorInfo)=>{
-    console.log('Failed:', errorInfo);
-  }
+
+
+  // const filterOption=(inputValue, option)=>{
+
+  // }
   // (组件第一次渲染完成，每次组件更新执行) 发送接口请求  执行异步任务 获取列表
   useEffect(() => {
     initData()
     // getResturants()
     // console.log(tableData)
+  
   }, [])
   return (
     <div>
@@ -273,7 +311,7 @@ function ShopList(props) {
         rowKey='id'
 
         size='small'
-        pagination={{ total: count, defaultCurrent: 1, pageSize: 20, showSizeChanger: false, onChange: handlePageChange, current: currentPage }}
+        pagination={{ total: count, defaultCurrent: 1, pageSize: 20, showSizeChanger: false, onChange: handlePageChange }}
         columns={columns}
         // key={index}
         expandable={{
@@ -296,15 +334,18 @@ function ShopList(props) {
         title="修改店铺信息"
         visible={visible}
         footer={null}
-        // onOk={handleedietok}
-        // okText='确定'
-        // cancelText='取消'
-        // onCancel={handleCancel}
+        closable={true}
+      // onOk={handleedietok}
+      // okText='确定'
+      // cancelText='取消'
+      // onCancel={handleCancel}
       >
         <div>
           <Form
-          onFinish={onFinish}
-          onFinishFailed ={onFinishFailed }
+            form={form}
+            name="control-hooks"
+            onFinish={handleedietok}
+            onFinishFailed={onFinishFailed}
             labelCol={{
               span: 4,
             }}
@@ -313,29 +354,55 @@ function ShopList(props) {
             }}
             layout="horizontal"
           >
-            <Form.Item label="店铺名称"
-              rules={[{ required: true, message: '请输入店铺名称'}]}>
+            <Form.Item label="店铺名称" name="name" initialValue={selectTable.name}
+              rules={[{ required: true, message: '请输入店铺名称' }]}>
               <Input />
             </Form.Item>
-            <Form.Item label="详细地址" placeholder="请输入地址"
+            <Form.Item label="详细地址" name="address" placeholder="请输入地址"
               rules={[{ required: true, message: '请输入详细地址' }]}>
-              <Input />
-              <span>当前城市：{city.name}</span>
+              <AutoComplete
+                defaultValue={address.address}
+                style={{ width: '100%' }}
+                onSearch={querySearchAsync}
+                onSelect={addressSelect}
+                options={cityList}
+                filterOption={(inputValue, option) => {
+                  console.log(option)
+                  option.props.children.includes(inputValue)
+                }
+                }
+                placeholder="请输入地址"
+              />
             </Form.Item>
-            <Form.Item label="店铺介绍"
+            <Form.Item>
+
+            </Form.Item>
+            <div style={{ marginLeft: '250px' }}>当前城市：{city.name}</div>
+            <Form.Item label="店铺介绍" name="description" initialValue={selectTable.description}
               rules={[{ required: true, message: '请输入店铺介绍' }]}>
               <Input />
             </Form.Item>
-            <Form.Item label="联系电话"
+            <Form.Item label="联系电话" name="phone" initialValue={selectTable.phone}
               rules={[{ required: true, message: '请输入联系电话' },
-              { type: 'number', message: '电话号码必须是数字' }
+              {
+                type: 'number', message: '电话号码必须是数字',
+                transform(value) {
+                  if (value) {
+                    return Number(value);//将输入框当中的字符串转换成数字类型
+
+                  }
+                }
+              },
+
+
               ]}>
               <Input />
             </Form.Item>
 
-            <Form.Item label="店铺分类">
-              <Cascader
+            <Form.Item label="店铺分类" name="category">
+              <Cascader defaultValue={selectedCategory}
                 options={categoryOptions}
+                changeOnSelect
               />
             </Form.Item>
 
@@ -345,19 +412,19 @@ function ShopList(props) {
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                action={baseUrl + '/v1/addimg/shop'}
                 beforeUpload={beforeUpload}
                 onChange={handleChange}
               >
-                {url ? <img src={url} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                {selectTable.image_path ? <img src={baseImgPath + selectTable.image_path} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
               </Upload>
             </Form.Item>
             <Form.Item className="dialog-footer" >
-          
+
               <Button onClick={handleCancel}>取消</Button>
-              <Button type="primary" htmlType="submit" onClick={handleedietok }>确定</Button>
-          
-           
+              <Button type="primary" htmlType="submit">确定</Button>
+
+
             </Form.Item>
           </Form>
         </div>
