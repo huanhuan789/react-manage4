@@ -86,7 +86,7 @@ function AddGoods(props) {
     ];
     const [value, setValue] = React.useState('one');
     const [loading, setLoading] = useState(false)
-    const [url, setImgUrl] = useState('')
+    // const [url, setImgUrl] = useState('')
     // const [baseUrl, setBaseUrl] = useState('')
     // const [baseImgPath, setBaseImaPath] = useState('')
     const [restaurant_id, setrestaurant_id] = useState('')
@@ -319,7 +319,7 @@ function AddGoods(props) {
 
                     <Form.Item label="上传食品图片"  >
                         <Upload
-                            class="avatar-uploader"
+                            className="avatar-uploader"
                             name="avatar"
                             listType="picture-card"
                             className="avatar-uploader"

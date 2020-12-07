@@ -9,10 +9,12 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom'
 function App() {
   return (
     <BrowserRouter>
-      <Switch> {/*只匹配其中一个路由  */}
+      <Switch> 只匹配其中一个路由 
       {/* /* exact精确匹配 */}
-        <Route path='/login'  exact component={Login} />
-        <Route path='/'  component={Manage} />
+      <Route path='/' exact component={Login} />
+      <Route path='/manage'   exact component={Manage} />
+        
+       
       </Switch> 
    </BrowserRouter>
 //   <Router history={hashHistory}>

@@ -6,12 +6,21 @@ import { signout } from '../../api/getData';
 import { Avatar, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import localUtils from '../../config/localUtils'
-import { Tooltip, Modal, Button, Space } from 'antd';
+import {removeStore} from '../../config/mUtils'
+import { Tooltip, Modal, Button, Space , Breadcrumb} from 'antd';
 import menuList from '../../config/menuCon'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import {baseImgPath} from '../../config/env'
+import {connect} from 'react-redux'
 
 const { confirm } = Modal;
 function HeadTop(props) {
+  let [titles,setTitles]=useState([])
+  const user = props.user
+  // const [adminInfo,setAdminInfo]=useState(user)
+  // console.log(adminInfo.avatar)
     console.log(props)
    
     const logout = () => {
@@ -24,11 +33,12 @@ function HeadTop(props) {
                 console.log('确认');
                 const res = await signout()
                 if (res.status == 1) {
-                    localUtils.user = {}
+                  removeStore('user')
+                    // localUtils.user = {}
                     message.success('退出成功')
                     console.log(props)
                       // 跳转到登录界面
-                    props.history.replace('/login')
+                    props.history.push('/')
                 } else {
                     message.error(res.message)
                 }
@@ -42,34 +52,50 @@ function HeadTop(props) {
    const getTitle = () => {
         // 得到当前请求路径
         const path = props.location.pathname
-        let title
+        console.log(path)
         menuList.forEach(item => {
-          if (item.key===path) { // 如果当前item对象的key与path一样,item的title就是需要显示的title
-            title = item.title
-          } else if (item.children) {
-            // 在所有子item中查找匹配的
-            const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
-            // 如果有值才说明有匹配的
-            if(cItem) {
-              // 取出它的title
-              title = cItem.title
-            }
+          if (item.key==path) { // 如果当前item对象的key与path一样,item的title就是需要显示的title
+            console.log(item.key)
+            console.log(path)
+            titles = item.title
+            setTitles(titles)
+          // } else if (item.children) {
+          //   // 在所有子item中查找匹配的
+          //   const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
+          //   // 如果有值才说明有匹配的
+          //   if(cItem) {
+          //     // 取出它的title
+          //     title = cItem.title
+          //   }
+          }else{
+            console.log(item.key)
+            console.log(path)
+            console.log(titles)
           }
-        })
-        return title
-      }
-      const titleitem = getTitle()
-    const user = localUtils.user
+    
+      })
+    }
+    useEffect(()=>{
+      getTitle()
+    },[props.location.pathname])
+   
+
     // console.log(baseImgPath + user.avatar)
     console.log(user)
     const text = <span>{user.user_name}</span>;
     return (
         <div className='header_container'>
-            <div>{titleitem}</div>
+           <Breadcrumb>
+           {titles.map(item=>(
+                <Breadcrumb.Item>
+                {item}
+                 </Breadcrumb.Item>
+           ))}
+  </Breadcrumb>
             <div>
                 <Tooltip placement="bottom" title={text}>
                     {/* <Avatar className="avator" size="large" src="baseImgPath + user.avatar" /> */}
-                    <Avatar className="avator" size="large" />
+                    <Avatar src={baseImgPath + user.avatar}  className="avator" size="large" />
                 </Tooltip>
                         
                  <Button type="text" onClick={logout} danger>
@@ -83,4 +109,8 @@ function HeadTop(props) {
         </div>
     )
 }
-export default withRouter(HeadTop)
+export default connect(
+  state =>({
+user:state
+  }),{}
+)(withRouter(HeadTop))

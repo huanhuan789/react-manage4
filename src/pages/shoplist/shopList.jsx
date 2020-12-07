@@ -277,14 +277,13 @@ function ShopList(props) {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl => {
+      // getBase64(info.file.originFileObj, imageUrl => {
         setLoading(false);
         console.log(info)
         // setImgUrl(imageUrl);
         // setBaseImgPath(imageUrl);
-        selectTable.image_path =imageUrl ;
-      }
-      );
+        selectTable.image_path =info.file.response.image_pat ;
+    
     }
   };
   const uploadButton = (
@@ -414,7 +413,7 @@ function ShopList(props) {
                 showUploadList={false}
                 action={baseUrl + '/v1/addimg/shop'}
                 beforeUpload={beforeUpload}
-                onChange={handleChange}
+                onChange={(info)=>handleChange(info)}
               >
                 {selectTable.image_path ? <img src={baseImgPath + selectTable.image_path} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
               </Upload>

@@ -4,6 +4,7 @@
 export const setStore = (name, content) => {
 	if (!name) return;
 	if (typeof content !== 'string') {
+        // 将json对象转换成字符串
 		content = JSON.stringify(content);
 	}
 	window.localStorage.setItem(name, content);
@@ -14,7 +15,7 @@ export const setStore = (name, content) => {
  */
 export const getStore = name => {
 	if (!name) return;
-	return window.localStorage.getItem(name);
+	return window.localStorage.getItem(name||'{}');
 }
 
 /**
