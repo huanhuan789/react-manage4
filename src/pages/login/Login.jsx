@@ -120,7 +120,7 @@ function Login(props) {
     // 判断内存中是否有user
     console.log(user.id)
     console.log(user.user_name)
-    if (!user.id) {
+    if (!user||!user.id) {
       props.getAdminData()
       console.log('------------------zhixingl')
       // console.log(user)

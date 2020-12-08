@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Table, Tag, Space, Button, Modal } from 'antd';
+import { Table, Tag, Space, Button, Modal ,message} from 'antd';
 import { baseUrl, baseImgPath } from '../../config/env'
 import { getFoods, getFoodsCount, getMenu, updateFood, deleteFood, getResturantDetail, getMenuById } from '../../api/getData'
 function FoodList(props) {
@@ -27,11 +27,27 @@ function FoodList(props) {
             title: '操作',
             width: 300,
             key: 'action',
-            render: (tableData) => (
+            render: (txt, record, index) => (
                 <Space size="small" >
-                    <Button onClick={() => handleEdit(tableData)}>编辑</Button>
+                    <Button onClick={() => {
+                        console.log(txt,record,index)
+                    }}>编辑</Button>
                     {/* <Button onClick={()=>handleEdit()}>编辑</Button> */}
-                    <Button onClick={() => handleDelete(tableData)} type="primary" danger>
+                    <Button onClick={async () => {
+                try{
+                    const res = await deleteFood(record.item_id);
+                    if (res.status == 1) {
+                        message.success('删除食品成功'
+                        );
+                        tableData.splice(index, 1);
+                    }else{
+                        throw new Error(res.message)
+                    }
+                }catch(err){
+                    message.error(err.message)
+                    console.log('删除食品失败')
+                }
+                    }} type="primary" danger>
                         删除
               </Button>
                 </Space>
@@ -39,8 +55,8 @@ function FoodList(props) {
         },
 
     ];
-    const [baseUrl, setBaseUrl] = useState()
-    const [baseImgPath, setbaseImgPath] = useState()
+    // const [baseUrl, setBaseUrl] = useState()
+    // const [baseImgPath, setbaseImgPath] = useState()
     let [restaurant_id, setRestaurant] = useState(0)
     const [city, setCity] = useState({})
     //

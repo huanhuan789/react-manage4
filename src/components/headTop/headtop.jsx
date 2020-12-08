@@ -38,7 +38,7 @@ function HeadTop(props) {
                     message.success('退出成功')
                     console.log(props)
                       // 跳转到登录界面
-                    props.history.push('/')
+                    props.history.push('/login')
                 } else {
                     message.error(res.message)
                 }

@@ -76,7 +76,9 @@ function AddShop() {
 
             <Popconfirm title="确定删除此项？"
               onCancel={() => console.log('用户点击取消')}
-              onConfirm={() => handleDelete(record.index)}>
+              onConfirm={() =>{
+                console.log('删除')
+              }}>
               <Button type="danger" size="small" >
                 删除
             </Button>
@@ -178,19 +180,12 @@ function AddShop() {
     console.log(info)
     if (info.file.status === 'uploading') {
         console.log(info)
-        setLoading(true);
         return;
     }
     if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, imageUrl => {
-            setLoading(false);
-           
             console.log(info)
-            formData.image_path =imageUrl ;
-
-        }
-        );
+            formData.image_path =info.file.response.image_path ;
+     
     }else{
       message.error('上传图片失败！')
     }
@@ -199,19 +194,19 @@ function AddShop() {
     console.log(info)
     if (info.file.status === 'uploading') {
         console.log(info)
-        setLoading(true);
+     
         return;
     }
     if (info.file.status === 'done') {
         // Get this url from response in real world.
-        getBase64(info.file.originFileObj, imageUrl => {
-            setLoading(false);
+    
+            
            
             console.log(info)
-            formData.business_license_image = imageUrl ;
+            formData.business_license_image = info.file.response.image_path ;
 
-        }
-        );
+      
+   
     }else{
       message.error('上传图片失败！')
     }
@@ -220,19 +215,17 @@ function AddShop() {
     console.log(info)
     if (info.file.status === 'uploading') {
         console.log(info)
-        setLoading(true);
+     
         return;
     }
     if (info.file.status === 'done') {
         // Get this url from response in real world.
-        getBase64(info.file.originFileObj, imageUrl => {
-            setLoading(false);
-           
+    
+       
             console.log(info)
-            formData.catering_service_license_image = imageUrl ;
+            formData.catering_service_license_image = info.file.response.image_path ;
 
-        }
-        );
+    
     }else{
       message.error('上传图片失败！')
     }

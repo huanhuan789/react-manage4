@@ -3,52 +3,52 @@ import { title } from "echarts/lib/theme/dark"
 const menuList = [
     {
       title: ['首页'], // 菜单标题名称
-      key: '/home', // 对应的path
+      key: '/manage/home', // 对应的path
       isPublic: true // 公开的
     },
         {
           title:['数据管理', '用户列表'],
-          key: '/UserList'
+          key: '/manage/UserList'
         },
         {
           title: ['数据管理', '商家列表'],
-          key: '/shoplist'
+          key: '/manage/shoplist'
         },
         {
           title: ['数据管理', '食品列表'],
-          key: '/foodlist'
+          key: '/manage/foodlist'
         },
         {
           title: ['数据管理', '订单列表'],
-          key: '/oderlist'
+          key: '/manage/oderlist'
         },
         {
           title: ['数据管理', '管理员列表'],
-          key: '/adminlist'
+          key: '/manage/adminlist'
         },
  
         {
             title: ['添加数据', '添加商铺'],
-            key: '/addshop'
+            key: '/manage/addshop'
           },
           {
             title: ['添加数据', '添加商品'],
-            key: '/addgoods'
+            key: '/manage/addgoods'
           },
   
 
       {
         title:['图表', '用户分布'],
-        key:'/visitor'
+        key:'/manage/visitor'
       } ,
       {
         title: ['编辑', '文本编辑'],
-        key:'/ediet'
+        key:'/manage/ediet'
       }  ,
   
     {
         title:['设置', '管理员设置'],
-        key:'/adminset'
+        key:'/manage/adminset'
     
     },
   ]

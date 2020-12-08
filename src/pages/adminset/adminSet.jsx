@@ -64,10 +64,10 @@ function AdminSet(props) {
             // console.log(localUtils.user.avatar)
             console.log(adminInfo.avatar)
             console.log(adminInfo)
-                        dispatch({
-                type: 'userAvatar',
-                user: info.file.response.image_path
-              });
+            //             dispatch({
+            //     type: 'userAvatar',
+            //     user: info.file.response.image_path
+            //   });
           
         }
     };
@@ -127,14 +127,14 @@ function AdminSet(props) {
 //         }
 
 // }
-const mapDispatchToProps =(dispatch) =>{
-    return{
+// const mapDispatchToProps =(dispatch) =>{
+//     return{
 
-    }
-}
+//     }
+// }
 export default connect(
     state => ({
         user: state
     }),
-    mapDispatchToProps
+   {}
 )(AdminSet)
