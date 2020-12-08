@@ -9,8 +9,12 @@ export default (state=initUser,action)=>{
       return action.user
     case 'erro':
       return {errorMsg:action.errorMsg}
+      //更改用户信息
       case 'userAvatar':
         return action.userAvatar
+        //退出
+        case 'removeuser':
+        return {}
     default:
       return state
   }

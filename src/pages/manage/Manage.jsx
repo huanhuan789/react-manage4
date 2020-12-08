@@ -36,7 +36,8 @@ const { SubMenu } = Menu;
 
 // 后台管理的路由组件
 function Manage(props) {
-
+  const urlParams = new URL(window.location.href);
+  console.log(urlParams.pathname)
   // 读取保存的user，如果不存在，直接跳转到登录页面
 
   useEffect(() => {
@@ -44,6 +45,9 @@ function Manage(props) {
     console.log(user.id)
     if (!user.id) {
       props.history.push('/login')
+    }
+    else{
+      props.history.push(urlParams.pathname)
     }
   }, [])
 

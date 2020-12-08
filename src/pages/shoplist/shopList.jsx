@@ -96,7 +96,7 @@ function ShopList(props) {
               style={{ margin: "0 1rem" }}
               size="small"
               onClick={() => {
-                props.history.push(`/addgoods/${record.id}`);
+                props.history.push(`/manage/addgoods/${record.id}`);
 
                 // props.history.push({
                 //   pathname: '/addgoods',

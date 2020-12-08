@@ -15,10 +15,13 @@ function Login(props) {
   // const [show, setShow] = useState(true);
   // console.log(user)
   // console.log(store.getState())
+  const urlParams = new URL(window.location.href);
+  console.log(urlParams)
+  console.log(urlParams.pathname)
   console.log(props)
   // console.log(props.store.getState())
   // let user = store.getState()
-  props.getAdminData()
+  // props.getAdminData()
   // console.log(localUtils)
   const user=props.user
   console.log(user)
@@ -118,8 +121,8 @@ function Login(props) {
   useEffect(() => {
     console.log(user)
     // 判断内存中是否有user
-    console.log(user.id)
-    console.log(user.user_name)
+    // console.log(user.id)
+    // console.log(user.user_name)
     if (!user||!user.id) {
       props.getAdminData()
       console.log('------------------zhixingl')
@@ -127,10 +130,12 @@ function Login(props) {
     } else {
       message.success('检测到您已经登陆过，将自动登录')
       console.log('检测到您已经登陆过，将自动登录')
+      props.history.push('/manage')
       // setShow(false)
       // return <Redirect  to='/' />
       // console.log(show)
-      props.history.push('/manage')
+      // props.history.push(urlParams.pathname)
+     
     }
   }, [])
   return (

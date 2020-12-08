@@ -4,6 +4,7 @@ import { setStore } from '../config/mUtils'
 //同步action
 export const receiveUser=(user)=>({type:'adminInfo',user})
 export const showError=(erroMsg)=>({type:'erro',erroMsg})
+// 
 // export const userAvatar=(avatarState)=>({type:'avatar',avatarState})
 
 //异步获取用户信息
