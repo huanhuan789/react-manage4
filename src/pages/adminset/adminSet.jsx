@@ -28,7 +28,7 @@ function beforeUpload(file) {
 }
 function AdminSet(props) {
 
-    let adminInfo = props.user
+    let adminInfo = {...props.user}
     console.log(adminInfo.avatar)
     const [loading, setLoading] = useState(false)
     // let [imageUrl,setImageUrl]=useState(adminInfo.avatar)
@@ -64,7 +64,9 @@ function AdminSet(props) {
             // console.log(localUtils.user.avatar)
             console.log(adminInfo.avatar)
             console.log(adminInfo)
-            //             dispatch({
+            console.log(props)
+            props.sendAction(adminInfo)
+            //             props.dispatch({
             //     type: 'userAvatar',
             //     user: info.file.response.image_path
             //   });
@@ -127,14 +129,19 @@ function AdminSet(props) {
 //         }
 
 // }
-// const mapDispatchToProps =(dispatch) =>{
-//     return{
-
-//     }
-// }
+const mapDispatchToProps =(dispatch) =>{
+    return{
+sendAction:(adminInfo)=>{
+    dispatch({
+              type: 'userAvatar',
+              userAvatar: adminInfo
+    })
+}
+    }
+}
 export default connect(
     state => ({
         user: state
     }),
-   {}
+    mapDispatchToProps
 )(AdminSet)

@@ -4,6 +4,7 @@ import { Table, Tag, Space } from 'antd';
 function AdminList(){
     let [tableData, settableData] = useState([])
     const [offset, setOffset] = useState(0)
+    const [limit, setLimit] = useState(20);
     let [count,setcount]=useState(0)
     const columns = [
         {
@@ -40,6 +41,7 @@ function AdminList(){
             if (countData.status == 1) {
                count = countData.count;
                getAdmin();
+               setcount(count);
             }
     }
       //异步获取用户列表
@@ -59,6 +61,16 @@ function AdminList(){
         console.log(tableData)
         settableData(tableData);
       }
+     // 分页
+  const handlePageChange = (val, pageSize) => {
+    // 每页条数
+    console.log(pageSize);
+
+    offset = (val - 1) * limit;
+    // setCurrentPage(currentPage)
+    // setOffset(offset)
+    getAdmin();
+  };
       useEffect(() => {
         initData()
         // userDate()
@@ -70,7 +82,13 @@ function AdminList(){
       rowKey='index'
       size='small'
       // 分页每页20个
-      pagination={{ defaultPageSize: 20 }}
+      pagination={{
+        total: count,
+        defaultCurrent: 1,
+        pageSize: 20,
+        showSizeChanger: false,
+        onChange: handlePageChange,
+      }}
       columns={columns}
       dataSource={tableData}
     />

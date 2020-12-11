@@ -199,14 +199,8 @@ function AddShop() {
     }
     if (info.file.status === 'done') {
         // Get this url from response in real world.
-    
-            
-           
             console.log(info)
             formData.business_license_image = info.file.response.image_path ;
-
-      
-   
     }else{
       message.error('上传图片失败！')
     }

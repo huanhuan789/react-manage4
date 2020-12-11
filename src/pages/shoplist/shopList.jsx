@@ -157,8 +157,8 @@ function ShopList(props) {
   const initData = async () => {
       try {
         //------------------------------------------ city接口504
-        //  let citys = await cityGuess();
-        //  console.log(citys)
+        //  city = await cityGuess();
+        
         const countData = await getResturantsCount();
         if (countData.status == 1) {
           setcount(count);
@@ -358,8 +358,7 @@ function ShopList(props) {
               <p style={{ margin: 0 }}>分类 {record.category}</p>
             </div>
           ),
-          //是否允许展开 名字不为Not Expandable可展开
-          rowExpandable: (record) => record.name !== "Not Expandable",
+         
         }}
         dataSource={tableData}
       />
@@ -371,7 +370,7 @@ function ShopList(props) {
         // onOk={handleedietok}
         // okText='确定'
         // cancelText='取消'
-        // onCancel={handleCancel}
+        onCancel={handleCancel}
       >
         <div>
           <Form

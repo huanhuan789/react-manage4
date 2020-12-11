@@ -15,16 +15,15 @@ function Login(props) {
   // const [show, setShow] = useState(true);
   // console.log(user)
   // console.log(store.getState())
-  const urlParams = new URL(window.location.href);
-  console.log(urlParams)
-  console.log(urlParams.pathname)
+  // const urlParams = new URL(window.location.href);
+  // console.log(urlParams)
+  // console.log(urlParams.pathname)
   console.log(props)
   // console.log(props.store.getState())
   // let user = store.getState()
   // props.getAdminData()
   // console.log(localUtils)
-  const user=props.user
-  console.log(user)
+
   //将管理员信息加入到全局中，【在redux中获取】
   // const getAdminData = async () => {
   //   const adminInfo = await getAdminInfo()
@@ -39,7 +38,6 @@ function Login(props) {
   //   }
   // }
 
-  console.log(props)
   // const adminInfo=(newValue)=>{
   //   if(newValue.id){
   //     message.success('检测到您已经登陆过，将自动登录')
@@ -74,7 +72,7 @@ function Login(props) {
       const password = values.password
       console.log('用户名', username)
       console.log('密码', password)
-      console.log(user)
+      // console.log(user)
       //如果全局中有用户信息了，对用户的密码进行验证
       // if (user) {
       const result = await login({ user_name: username, password: password })
@@ -83,7 +81,6 @@ function Login(props) {
         message.success('登陆成功');
         console.log(result)
         props.history.push('/manage')
-
       } else {
         message.error(result.message);
         // console.log(result)
@@ -119,7 +116,9 @@ function Login(props) {
   };
   //判断全局中是否有该用户名，如果没有用户名，加入用户名到全局中，如果有自动登录
   useEffect(() => {
+    const user=props.user
     console.log(user)
+    // console.log(user)
     // 判断内存中是否有user
     // console.log(user.id)
     // console.log(user.user_name)
@@ -148,7 +147,6 @@ function Login(props) {
           <Form
             name="normal_login"
             className="login-form"
-            initialValues={{ remember: true }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >

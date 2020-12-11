@@ -72,7 +72,6 @@ function HeadTop(props) {
             console.log(path)
             console.log(titles)
           }
-    
       })
     }
     useEffect(()=>{

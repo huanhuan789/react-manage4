@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Space, Button, Modal } from 'antd';
 import {getOrderList, getOrderCount, getResturantDetail, getUserInfo, getAddressById} from '../../api/getData';
-function OderList(){
+function OderList(props){
     const columns = [
         {
           title: '订单 ID',
@@ -24,47 +24,57 @@ function OderList(){
       ];
       let [tableData, settableData] = useState([])
       let [count,setcount]=useState(0)
-      const [restaurant_id, setrestaurant_id] = useState(null)
+      let [restaurant_id, setrestaurant_id] = useState(null)
       const [ expendRow,setexpendRow]=useState([])
+      let [offset, setOffset] = useState(0);
+      // 每页限制数据条数
+      const [limit, setLimit] = useState(20);
     //   异步获取订单数量
       const initData=async()=>{
-        const countData = await getOrderCount();
+        const countData = await getOrderCount({restaurant_id: restaurant_id});
         console.log(countData)
         if (countData.status == 1) {
            count = countData.count;
+           setcount(count);
            getOrders();
         }
 }
  //异步获取用户列表
  const getOrders= async()=>{
-    const Orders = await getOrderList();
-    const tableData = Orders ;
-  //   tableData = [];
-  //   Users.forEach(item => {
-  //    let tableData = [];
-  //     tableData.username = item.username;
-  //     tableData.registe_time = item.registe_time;
-  //     tableData.city = item.city;
-  //    tableData.push(tableData);
-  //    console.log(tableData)
-  //    settableData(tableData);
-  // })
-  console.log(tableData)
+    const Orders = await getOrderList( {offset: offset,
+      limit: limit,restaurant_id: restaurant_id} );
+    tableData = [] ;
+    Orders.forEach((item, index) => {
+      const tableDatavalue = {};
+      tableDatavalue.id = item.id;
+      tableDatavalue.total_amount = item.total_amount;
+      tableDatavalue.status = item.status_bar.title;
+      tableDatavalue.user_id = item.user_id;
+      tableDatavalue.restaurant_id = item.restaurant_id;
+      tableDatavalue.address_id = item.address_id;
+      tableDatavalue.index = index;
+      tableData.push(tableDatavalue);
+      
+  })
   settableData(tableData);
+  console.log(tableData);
 }
 // 获取status
-const expand= async(tableData, status)=>{
-    if (status) {
-        const restaurant = await getResturantDetail(tableData.restaurant_id);
-        const userInfo = await getUserInfo(tableData.user_id);
-        const addressInfo = await getAddressById(tableData.address_id);
-
-      tableData.splice(tableData.index, 1, {...tableData, ...{restaurant_name: restaurant.name, restaurant_address: restaurant.address, address: addressInfo.address, user_name: userInfo.username}});
+const expand= async(expanded,record)=>{
+    if (expanded) {
+  
+        const restaurant = await getResturantDetail(record.restaurant_id);
+        const userInfo = await getUserInfo(record.user_id);
+        const addressInfo = await getAddressById(record.address_id);
+        const tableDatavalue = [...tableData];
+        tableDatavalue.splice(record.index, 1, {...record, ...{restaurant_name: restaurant.name, restaurant_address: restaurant.address, address: addressInfo.address, user_name: userInfo.username}});
    
-       expendRow.push(tableData.index);
+       expendRow.push(record.index);
        setexpendRow(expendRow)
+      //  console.log(tableData)
+       settableData(tableDatavalue);
     }else{
-        const index = expendRow.indexOf(tableData.index);
+        const index = expendRow.indexOf(record.index);
        expendRow.splice(index, 1)
     }
   //   tableData = [];
@@ -77,10 +87,21 @@ const expand= async(tableData, status)=>{
   //    console.log(tableData)
   //    settableData(tableData);
   // })
-  console.log(tableData)
-  settableData(tableData);
+ 
 }
+// 分页
+const handlePageChange = (val, pageSize) => {
+  // 每页条数
+  console.log(pageSize);
+
+  offset = (val - 1) * limit;
+  // setCurrentPage(currentPage)
+  // setOffset(offset)
+  getOrders();
+};
+
 useEffect(() => {
+  restaurant_id = props.match.params.restaurant_id;
   initData()
   console.log(tableData)
 }, [])
@@ -95,8 +116,17 @@ useEffect(() => {
       //   }
       // }
       // }}
+      onExpand={expand}
       size='small'
       // 分页每页20个
+       // 分页每页20个
+       pagination={{
+        total: count,
+        defaultCurrent: 1,
+        pageSize: 20,
+        showSizeChanger: false,
+        onChange: handlePageChange,
+      }}
       // pagination={{ defaultPageSize: 20 }}
       columns={columns}
       // key={index}

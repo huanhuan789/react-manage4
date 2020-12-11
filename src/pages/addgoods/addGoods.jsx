@@ -41,6 +41,7 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 function AddGoods(props) {
+  const [form] = Form.useForm();
   const columns = [
     {
       title: "规格",
@@ -69,17 +70,28 @@ function AddGoods(props) {
       render: (txt, record, index) => {
         return (
           <div>
-            <Popconfirm
+            {/* <Popconfirm
               title="确定删除此项？"
               onCancel={() => console.log("用户点击取消")}
               onConfirm={() => {
+                console.log("删除");
+                // const foodFormvalue={...foodForm}
+                //   foodFormvalue.specs.splice(index, 1);
+                //   console.log(foodFormvalue)
+                // setfoodForm(foodFormvalue)
                 foodForm.specs.splice(index, 1);
-              }}
-            >
-              <Button type="danger" size="small">
+                setfoodForm(foodForm);
+              }} */}
+            {/* > */}
+              <Button type="danger" size="small" onClick={()=>{
+                let foodFormvalue=JSON.parse(JSON.stringify(foodForm))
+                foodFormvalue.specs.splice(index,1);
+                setfoodForm(foodFormvalue)
+                console.log(foodFormvalue.specs)
+              }}>
                 删除
               </Button>
-            </Popconfirm>
+            {/* </Popconfirm> */}
           </div>
         );
       },
@@ -112,12 +124,18 @@ function AddGoods(props) {
       },
     ],
   });
+  // const [specs,setSpecs]=useState([{
+  //   specs: "默认",
+  //   packing_fee: 0,
+  //   price: 20,
+  // },])
+
   const [foodrules, setfoodrules] = useState({
     name: [{ required: true, message: "请输入食品名称", trigger: "blur" }],
   });
   const [attributes, setattributes] = useState([
     {
-      value: "新",
+      value: "新品",
       label: "新品",
     },
     {
@@ -131,6 +149,7 @@ function AddGoods(props) {
   //单规格展示
   const [foodSpecsshow, setFoodSpecsshow] = useState(true);
   const [dialogFormVisible, setdialogFormVisible] = useState(false);
+  const [specs, setSpecs] = useState([]);
   const [specsForm, setspecsForm] = useState({
     specs: "",
     packing_fee: 0,
@@ -158,40 +177,35 @@ function AddGoods(props) {
     setshowAddCategory((showAddCategory) => !showAddCategory);
     // return showAddCategory ?'showEdit': ''
   };
-  // 添加分类提交
-  const submitcategoryForm = () => {
-    // $refs[categoryForm].validate(async (valid) => {
-    //     if (valid) {
-    //         const params = {
-    //             name: categoryForm.name,
-    //             description: categoryForm.description,
-    //             restaurant_id: restaurant_id,
-    //         }
-    //         try{
-    //             const result = await addCategory(params);
-    //             if (result.status == 1) {
-    //                 initData();
-    //                 categoryForm.name = '';
-    //                categoryForm.description = '';
-    //                 showAddCategory = false;
-    //                 $message({
-    //                     type: 'success',
-    //                     message: '添加成功'
-    //                   });
-    //             }
-    //         }catch(err){
-    //             console.log(err)
-    //         }
-    //     } else {
-    //        $notify.error({
-    //             title: '错误',
-    //             message: '请检查输入是否正确',
-    //             offset: 100
-    //         });
-    //         return false;
-    //     }
-    // });
+  // 添加分类提交  ------------try -catch都执行
+  const submitcategoryForm = async (values) => {
+    console.log(values);
+    const params = {
+      name: values.name,
+      description: values.description,
+      restaurant_id: restaurant_id,
+    };
+    // try{
+    const result = await addCategory(params);
+    console.log(result);
+    if (result.status == 1) {
+      initData();
+      // const nullcate = { ...categoryForm };
+      // nullcate.name = "";
+      // nullcate.description = "";
+      // setcategoryForm(nullcate);
+      // console.log(nullcate);
+      console.log(values);
+      // showAddCategory = false;
+      setshowAddCategory(false);
+      message.success("添加成功");
+      form.resetFields();
+    }
+    // }catch(err){
+    //     console.log(err)
+    // }
   };
+
   // 请求食品列表
   const initData = async () => {
     const result = await getCategory(restaurant_id);
@@ -202,9 +216,12 @@ function AddGoods(props) {
         item.value = index;
         item.label = item.name;
       });
-      categoryForm.categoryList = result.category_list;
-      console.log(categoryForm.categoryList);
-      setcategoryForm(categoryForm);
+      console.log(result.category_list);
+      const cateGory = { ...categoryForm };
+      cateGory.categoryList = result.category_list;
+      console.log(cateGory);
+      setcategoryForm(cateGory);
+      console.log(categoryForm);
     } else {
       console.log(result);
     }
@@ -219,12 +236,12 @@ function AddGoods(props) {
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setLoading(false);
-        // setBaseImaPath(imageUrl);
-        console.log(info);
-        foodForm.image_path = imageUrl;
-      });
+      //   getBase64(info.file.originFileObj, (imageUrl) => {
+      setLoading(false);
+      // setBaseImaPath(imageUrl);
+      console.log(info);
+      foodForm.image_path = info.file.response.image_path;
+      //   });
     }
   };
   const uploadButton = (
@@ -233,22 +250,83 @@ function AddGoods(props) {
       <div style={{ marginTop: 8 }}>上传</div>
     </div>
   );
-  //添加规格弹出框 确认
-  const addspecs = () => {
-    foodForm.specs.push({ ...specsForm });
-    specsForm.specs = "";
-    specsForm.packing_fee = 0;
-    specsForm.price = 20;
-    dialogFormVisible = false;
+  //添加规格弹出框 确认  values输出带有name 和 description
+  const addspecs = (values) => {
+    console.log(values);
+    // const specsvalues={...specsForm}
+    // specsvalues= values;
+    // setspecsForm(specsvalues);
+    // const defaultSpecs = { ...specsForm };
+    // defaultSpecs=values
+    // console.log(...foodForm)
+    // ----------------------------------
+    const foodFo = JSON.parse(JSON.stringify(foodForm)) 
+    foodFo.specs.push({
+      specs: values.specs,
+      packing_fee: values.packing_fee,
+      price: values.price,
+    });
+    console.log(foodFo);
+    setfoodForm(foodFo);
+    console.log(foodForm)
+    // foodFo.specs.forEach((item)=>{
+    //   specs.push({
+    //     specs: item.specs_name,
+    //     packing_fee: item.packing_fee,
+    //     price: item.price,
+    //   });
+    //   console.log(specs);
+    //   setSpecs(specs);
+    // })
+    form.resetFields();
+
+    //    const specsvalues={...specsForm}
+    // specsvalues.specs = "";
+    // specsvalues.packing_fee = 0;
+    // specsvalues.price = 20;
+    // setspecsForm(specsvalues)
+    setdialogFormVisible(false);
   };
   // 多规格删除
   const handleDelete = () => {};
   //
   const onChange = () => {};
-  //添加规格弹窗 确认
-  const handleedietok = () => {
-    console.log("确认添加");
+  const addFood = async (values) => {
+    console.log(values);
+    if (values) {
+      const params = {
+        ...foodForm,
+        category_id: selectValue.id,
+        restaurant_id: restaurant_id,
+      };
+      const result = await addFood(params);
+      if (result.status == 1) {
+        console.log(result);
+        message.success("添加成功");
+        foodForm = {
+          name: "",
+          description: "",
+          image_path: "",
+          activity: "",
+          attributes: [],
+          specs: [
+            {
+              specs: "默认",
+              packing_fee: 0,
+              price: 20,
+            },
+          ],
+        };
+      } else {
+        message.error(result.message);
+      }
+    }
   };
+  const addFoodfailed = (err) => {
+    // message.error(err)
+    console.log(err);
+  };
+
   // // (组件第一次渲染完成，每次组件更新执行) 发送接口请求  执行异步任务 获取数据
   useEffect(() => {
     if (props.match.params.restaurant_id) {
@@ -272,13 +350,13 @@ function AddGoods(props) {
     <div>
       <div style={{ marginTop: 20 }}>
         <header className="form_header">选择食品种类</header>
-        <Form
+        <div
           label-width="110px"
           className="form"
           // labelCol={{
           //     span: 4,
           // }}
-          wrapperCol={{
+          wrappercol={{
             span: 14,
             offset: 4,
           }}
@@ -286,8 +364,8 @@ function AddGoods(props) {
           <div className="category_select">
             <Form.Item label="食品种类">
               <Select style={{ width: "100%" }}>
-                {categoryForm.categoryList.map((item) => (
-                  <Option key={item.value}>{item.label}</Option>
+                {categoryForm.categoryList.map((item, index) => (
+                  <Option key={index}>{item.name}</Option>
                 ))}
               </Select>
             </Form.Item>
@@ -295,36 +373,57 @@ function AddGoods(props) {
           <div
             className={`add_category_row${showAddCategory ? "showEdit" : ""}`}
           >
-            <div className="add_category">
-              <Form.Item label="食品种类" name='name'>
+            <Form
+              form={form}
+              name="addCategory"
+              className="add_category"
+              onFinish={submitcategoryForm}
+            >
+              <Form.Item
+                label="食品种类"
+                name="name"
+                initialValue={categoryForm.name}
+              >
                 <Input />
               </Form.Item>
-              <Form.Item label="种类描述" name='description'>
+              <Form.Item
+                label="种类描述"
+                name="description"
+                initialValue={categoryForm.description}
+              >
                 <Input />
               </Form.Item>
               <Form.Item>
-                <Button
-                  type="primary"
-                  onClick={submitcategoryForm("categoryForm")}
-                >
+                <Button type="primary" htmlType="submit">
                   提交
                 </Button>
               </Form.Item>
-            </div>
+            </Form>
           </div>
           <div className="add_category_button" onClick={addCategoryFun}>
             <span>添加食品种类</span>
           </div>
-        </Form>
+        </div>
         <header className="form_header">添加食品</header>
-        <Form label-width="110px" className="form food_form" rules={foodrules}>
-          <Form.Item label="食品名称" name='name'>
+        <Form
+          label-width="110px"
+          className="form food_form"
+          onFinish={addFood}
+          onFinishFailed={addFoodfailed}
+        >
+          <Form.Item
+            label="食品名称"
+            name="name"
+            rules={[
+              { required: true, message: "请输入食品名称", trigger: "blur" },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="食品活动" name='activity'>
+          <Form.Item label="食品活动" name="activity">
             <Input />
           </Form.Item>
-          <Form.Item label="食品详情" name='description'>
+          <Form.Item label="食品详情" name="description">
             <Input />
           </Form.Item>
 
@@ -350,7 +449,7 @@ function AddGoods(props) {
               )}
             </Upload>
           </Form.Item>
-          <Form.Item label="食品特点" >
+          <Form.Item label="食品特点">
             <Select
               defaultValue={foodForm.attributes}
               style={{ width: 120 }}
@@ -369,9 +468,14 @@ function AddGoods(props) {
           </Form.Item>
           <Row className={foodSpecsshow ? "" : "isunshow"}>
             <Form.Item label="包装费">
-              <InputNumber min={0} max={100} onChange={onChange} />
+              <InputNumber
+                min={0}
+                max={100}
+                onChange={onChange}
+                defaultValue={5}
+              />
             </Form.Item>
-            <Form.Item label="价格" >
+            <Form.Item label="价格">
               <InputNumber
                 min={0}
                 max={10000}
@@ -391,6 +495,7 @@ function AddGoods(props) {
             >
               添加规格
             </Button>
+           
             <Table
               rowKey="id"
               // onRow={(record,index)=>{
@@ -411,7 +516,7 @@ function AddGoods(props) {
           </Row>
 
           <Form.Item>
-            <Button type="primary" onClick={addFood("foodForm")}>
+            <Button type="primary" htmlType="submit">
               确认添加食品
             </Button>
           </Form.Item>
@@ -419,32 +524,33 @@ function AddGoods(props) {
         <Modal
           title="添加规格"
           visible={dialogFormVisible}
-          onOk={handleedietok}
-          okText={addspecs}
-          cancelText="取消"
-          okText="确认"
+          //   onOk={addspecs}
+          //   cancelText="取消"
+          //   okText="确认"
+          footer={null}
           onCancel={() => setdialogFormVisible(false)}
         >
-          <Form rules={specsFormrules} onChange={() => setspecsForm(specsForm)}>
-            <Form.Item label="规格" lable-width="100px" name='specs'>
-              <Input
-                onChange={() => setspecsForm(specsForm.specs)}
-                auto-complete={"off"}
-              />
+          <Form form={form} initialValues={specsForm} onFinish={addspecs}>
+            <Form.Item
+              label="规格"
+              lable-width="100px"
+              name="specs"
+              rules={[
+                { required: true, message: "请输入规格", trigger: "blur" },
+              ]}
+            >
+              <Input />
             </Form.Item>
-            <Form.Item label="包装费" lable-width="100px" name='packing_fee'>
-              <InputNumber
-                min={0}
-                max={100}
-                onChange={() => setspecsForm(specsForm.packing_fee)}
-              />
+            <Form.Item label="包装费" lable-width="100px" name="packing_fee">
+              <InputNumber min={0} max={100} />
             </Form.Item>
-            <Form.Item label="价格" lable-width="100px" name='price'>
-              <InputNumber
-                min={0}
-                max={10000}
-                onChange={() => setspecsForm(specsForm.price)}
-              />
+            <Form.Item label="价格" lable-width="100px" name="price">
+              <InputNumber min={0} max={10000} />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                确认添加
+              </Button>
             </Form.Item>
           </Form>
         </Modal>
@@ -453,7 +559,7 @@ function AddGoods(props) {
           visible={visible}
           // onOk={handleOk}
           // okText='确定'
-          // onCancel={false}
+          //   onCancel={()=>{visible(false)}}
           footer={null}
         >
           <p>添加商品需要选择一个商铺，请先选择商铺</p>
