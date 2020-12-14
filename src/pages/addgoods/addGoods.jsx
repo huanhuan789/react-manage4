@@ -240,7 +240,9 @@ function AddGoods(props) {
       setLoading(false);
       // setBaseImaPath(imageUrl);
       console.log(info);
+      // const foodFo = JSON.parse(JSON.stringify(foodForm)) 
       foodForm.image_path = info.file.response.image_path;
+      setfoodForm(foodForm)
       //   });
     }
   };

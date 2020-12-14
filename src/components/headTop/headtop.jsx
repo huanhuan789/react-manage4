@@ -34,6 +34,7 @@ function HeadTop(props) {
                 const res = await signout()
                 if (res.status == 1) {
                   removeStore('user')
+                  props.logoutAction()
                     // localUtils.user = {}
                     message.success('退出成功')
                     console.log(props)
@@ -108,8 +109,18 @@ function HeadTop(props) {
         </div>
     )
 }
+const mapDispatchToProps =(dispatch)=>{
+  return{
+    logoutAction:()=>{
+            let action={
+              type:'logout',
+            }
+            dispatch(action)
+    }
+  }
+}
 export default connect(
   state =>({
 user:state
-  }),{}
+  }),mapDispatchToProps
 )(withRouter(HeadTop))

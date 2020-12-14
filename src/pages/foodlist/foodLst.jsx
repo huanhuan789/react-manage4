@@ -120,6 +120,7 @@ function FoodList(props) {
               console.log(txt, record, index);
               //表单无初始值显示
               //函数里有异步请求 先执行此同步函数代码，setVisible true 会先展示表单页面，initvalue只会在表单初始显示的时候获取初始值，而此时异步函数还未执行
+              //【解决】所有函数执行完获取到数据后 再展示表单 
               getSelectItemData(record, "edit");
               console.log(txt);
               console.log(txt.specfoods);
