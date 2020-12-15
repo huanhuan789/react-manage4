@@ -1,13 +1,13 @@
 import React from "react";
 import "./addShop.less";
-import { useState,useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   cityGuess,
   addShop,
   searchplace,
   foodCategory,
 } from "../../api/getData";
-import { SmileOutlined, UserOutlined } from '@ant-design/icons';
+import { SmileOutlined, UserOutlined } from "@ant-design/icons";
 import { baseUrl, baseImgPath } from "../../config/env";
 import {
   Form,
@@ -31,8 +31,7 @@ import moment from "moment";
 import { Upload, message } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 const { Option } = Select;
-
-
+const { RangePicker } = TimePicker;
 // 上传图片
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -88,17 +87,18 @@ function AddShop() {
                 console.log("删除");
               }}
             > */}
-              <Button type="danger" size="small" onClick={()=>{
-                let activitiesvalue=JSON.parse(JSON.stringify(activities))
-                activitiesvalue.splice(index,1)
-                console.log(activitiesvalue)
-                setActivities(activitiesvalue)
-              }
-
-              }>
-                删除
-              </Button>
-           
+            <Button
+              type="danger"
+              size="small"
+              onClick={() => {
+                let activitiesvalue = JSON.parse(JSON.stringify(activities));
+                activitiesvalue.splice(index, 1);
+                console.log(activitiesvalue);
+                setActivities(activitiesvalue);
+              }}
+            >
+              删除
+            </Button>
           </div>
         );
       },
@@ -148,14 +148,14 @@ function AddShop() {
     catering_service_license_image: "",
   });
   const [activityValue, setActivityValue] = useState("满减优惠");
-  const [activities, setActivities] = useState([
+  let [activities, setActivities] = useState([
     {
       icon_name: "减",
       name: "满减优惠",
       description: "满30减5，满60减8",
     },
   ]);
-  const [selectActive,setSelectActivity]=useState('')
+  let [selectActivity, setSelectActivity] = useState("");
   // const [baseUrl, setBaseUrl] = useState('')
   // const [baseImgPath, setBaseImgPath] = useState('')
   const [categoryOptions, setCategoryOptions] = useState([]);
@@ -164,8 +164,8 @@ function AddShop() {
     "简餐",
   ]);
   const [visible, setVisible] = useState(false);
-  const [form] = Form.useForm();
-  const [fromactivity]=Form.useForm();
+  const [formsubmitres] = Form.useForm();
+  const [fromactivity] = Form.useForm();
   const layout = {
     labelCol: {
       span: 8,
@@ -180,9 +180,6 @@ function AddShop() {
       span: 16,
     },
   };
-
-  
-
 
   const onChange = () => {};
   //食品分类
@@ -212,6 +209,12 @@ function AddShop() {
         console.log(categoryOptions);
       }
     });
+  };
+  //
+  const addressSelect = (address) => {
+    formData.latitude = address.latitude;
+    formData.longitude = address.longitude;
+    console.log(formData.latitude, formData.longitude);
   };
   //  上传图片
   const handleShopAvatarScucess = (info) => {
@@ -267,57 +270,58 @@ function AddShop() {
 
   const format = "HH:mm";
   // 优惠活动 弹出函数
-  const selectActivity = async (value) => {
-    console.log(value)
-    setSelectActivity(value)
+  const selectActivityfun = async (value) => {
+    console.log(value);
+    selectActivity=value
+    setSelectActivity(value);
     setVisible(true);
-   
   };
   const addActivityValue = (value) => {
-    const activitiesvalue=JSON.parse(JSON.stringify(activities))
+    const activitiesvalue = JSON.parse(JSON.stringify(activities));
     let newObj = {};
-    switch(selectActive){
-      case '满减优惠':
-        newObj= {
-          icon_name: '减',
-        name: '满减优惠',
-        description: value.description,
-        }
+    switch (selectActivity) {
+      case "满减优惠":
+        newObj = {
+          icon_name: "减",
+          name: "满减优惠",
+          description: value.description,
+        };
         break;
-      case '优惠大酬宾':
-        newObj= {
-          icon_name: '特',
-        name: '优惠大酬宾',
-        description: value.description,
-        }
+      case "优惠大酬宾":
+        newObj = {
+          icon_name: "特",
+          name: "优惠大酬宾",
+          description: value.description,
+        };
         break;
-      case '新用户立减':
-        newObj= {
-          icon_name: '新',
-        name: '新用户立减',
-        description: value.description,
-        }
+      case "新用户立减":
+        newObj = {
+          icon_name: "新",
+          name: "新用户立减",
+          description: value.description,
+        };
         break;
-      case '进店领券':
-        newObj= {
-          icon_name: '领',
-        name: '进店领券',
-        description: value.description,
-        }
+      case "进店领券":
+        newObj = {
+          icon_name: "领",
+          name: "进店领券",
+          description: value.description,
+        };
         break;
     }
-    activitiesvalue.push(newObj)
-    console.log( activitiesvalue)
-    setActivities( activitiesvalue)
-    setVisible(false)
+    activitiesvalue.push(newObj);
+    activities = activitiesvalue;
+    console.log(activitiesvalue);
+    setActivities(activitiesvalue);
+    setVisible(false);
     console.log(value);
 
-    form.resetFields();
+    fromactivity.resetFields();
   };
-  const onCancelActivity=()=>{
-    setVisible(false)
-    form.resetFields();
-  }
+  const onCancelActivity = () => {
+    setVisible(false);
+    fromactivity.resetFields();
+  };
   // 删除按钮
   const handleDelete = async () => {};
   // // 提交表单函数
@@ -331,6 +335,17 @@ function AddShop() {
   const formsubmit = async (values) => {
     if (values) {
       console.log("Received values of form: ", values);
+      formData.name = values.name;
+      formData.address = values.address;
+
+      formData.phone = values.phone;
+      formData.description=values.description;
+      formData.promotion_info=values.promotion_info
+      console.log(formData);
+      console.log(activities);
+      console.log(selectedCategory);
+      //Object.assign方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象
+      //Object.assign是深克隆，但克隆的是浅层
       Object.assign(
         formData,
         { activities },
@@ -342,38 +357,37 @@ function AddShop() {
       console.log(result);
       if (result.status == 1) {
         message.success("添加成功");
-        formData = {
-          name: "", //店铺名称
-          address: "", //地址
-          latitude: "",
-          longitude: "",
-          description: "", //介绍
-          phone: "",
-          promotion_info: "",
-          float_delivery_fee: 5, //运费
-          float_minimum_order_amount: 20, //起价
-          is_premium: true,
-          delivery_mode: true,
-          new: true,
-          bao: true,
-          zhun: true,
-          piao: true,
-          startTime: "",
-          endTime: "",
-          image_path: "",
-          business_license_image: "",
-          catering_service_license_image: "",
-      
-        };
-        selectedCategory = ["快餐便当", "简餐"];
-        activities = [
-          {
-            icon_name: "减",
-            name: "满减优惠",
-            description: "满30减5，满60减8",
-          },
-        ];
-        form.resetFields();
+        // formData = {
+        //   name: "", //店铺名称
+        //   address: "", //地址
+        //   latitude: "",
+        //   longitude: "",
+        //   description: "", //介绍
+        //   phone: "",
+        //   promotion_info: "",
+        //   float_delivery_fee: 5, //运费
+        //   float_minimum_order_amount: 20, //起价
+        //   is_premium: true,
+        //   delivery_mode: true,
+        //   new: true,
+        //   bao: true,
+        //   zhun: true,
+        //   piao: true,
+        //   startTime: "",
+        //   endTime: "",
+        //   image_path: "",
+        //   business_license_image: "",
+        //   catering_service_license_image: "",
+        // };
+        // selectedCategory = ["快餐便当", "简餐"];
+        // activities = [
+        //   {
+        //     icon_name: "减",
+        //     name: "满减优惠",
+        //     description: "满30减5，满60减8",
+        //   },
+        // ];
+        formsubmitres.resetFields();
       } else {
         message.error(result.message);
         console.log(result.message);
@@ -392,7 +406,7 @@ function AddShop() {
 
   return (
     <div>
-       {/* <Form.Provider
+      {/* <Form.Provider
         onFormFinish={(name, { values, forms }) => {
           console.log(name,values,forms)
           if (name === 'addActivityForm') {
@@ -413,7 +427,7 @@ function AddShop() {
         wrapperCol={{
           span: 14,
         }}
-         form={form}
+        form={formsubmitres}
         name="control-hooks"
         onFinish={formsubmit}
         onFinishFailed={onFinishFailed}
@@ -423,7 +437,14 @@ function AddShop() {
           name="name"
           rules={[{ required: true, message: "请输入店铺名称" }]}
         >
-          <Input />
+          <Input
+            value={formData.name}
+            // onChange={(e) => {
+            //   formData.name = e.target.value;
+            //   console.log(e.target.value);
+            //   setFormData(formData)
+            // }}
+          />
         </Form.Item>
         <Form.Item
           label="详细地址"
@@ -431,7 +452,7 @@ function AddShop() {
           placeholder="请输入地址"
           rules={[{ required: true, message: "请输入详细地址" }]}
         >
-          <Input />
+          <Input value={formData.address} />
         </Form.Item>
         <div style={{ marginLeft: "250px" }}>当前城市：{city.name}</div>
         {/* transform将字段值转换成目标值后进行校验 */}
@@ -451,49 +472,134 @@ function AddShop() {
             },
           ]}
         >
-          <Input />
+          <Input value={formData.phone} />
         </Form.Item>
         <Form.Item label="店铺简介" name="description">
-          <Input />
+          <Input value={formData.description} />
         </Form.Item>
         <Form.Item label="店铺标语" name="promotion_info">
-          <Input />
+          <Input value={formData.promotion_info} />
         </Form.Item>
         <Form.Item label="店铺分类" name="category">
-          <Cascader defaultValue={selectedCategory} options={categoryOptions} />
+          <Cascader defaultvalue={selectedCategory} options={categoryOptions} />
         </Form.Item>
-        <Form.Item label="店铺特点">
-          <span>品牌保证</span>
-          <Switch />
-          <span>蜂鸟专送</span>
-          <Switch />
-          <span>新开店铺</span>
-          <Switch />
+
+        <div style={{ marginLeft: "210px" }}>
+          <span style={{ marginRight: "50px" }}>店铺特点:</span>
+          <Form.Item name="is_premium" style={{ display: "inline-block" }}>
+            <span>品牌保证</span>
+            <Switch
+              checked={formData.is_premium}
+              onChange={(checked) => {
+                console.log(checked);
+                formData.is_premium = checked;
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="delivery_mode" style={{ display: "inline-block" }}>
+            <span>蜂鸟专送</span>
+            <Switch
+              checked={formData.delivery_mode}
+              onChange={(checked) => {
+                console.log(checked);
+                formData.delivery_mode = checked;
+              }}
+            />
+          </Form.Item>
+          <Form.Item style={{ display: "inline-block" }} name="new">
+            <span>新开店铺</span>
+            <Switch
+              checked={formData.new}
+              onChange={(checked) => {
+                console.log(checked);
+                formData.new = checked;
+              }}
+            />
+          </Form.Item>
+        </div>
+        <div style={{ marginLeft: "300px" }}>
+          <Form.Item name="bao" style={{ display: "inline-block" }}>
+            <span>外卖保</span>
+            <Switch
+              checked={formData.bao}
+              onChange={(checked) => {
+                console.log(checked);
+                formData.bao = checked;
+              }}
+            />
+          </Form.Item>
+          <Form.Item style={{ display: "inline-block" }} name="zhun">
+            <span>准时达</span>
+            <Switch
+              checked={formData.zhun}
+              onChange={(checked) => {
+                console.log(checked);
+                formData.zhun = checked;
+              }}
+            />
+          </Form.Item>
+          <Form.Item style={{ display: "inline-block" }} name="piao">
+            <span>开发票</span>
+            <Switch
+              checked={formData.piao}
+              onChange={(checked) => {
+                console.log(checked);
+                formData.new = checked;
+              }}
+            />
+          </Form.Item>
+        </div>
+        <Form.Item
+          label="配送费"
+          name="float_delivery_fee"
+          name="float_delivery_fee"
+        >
+          <InputNumber
+            min={0}
+            max={20}
+            defaultValue={5}
+            onChange={(value) => {
+              console.log(value);
+              formData.float_delivery_fee = value;
+            }}
+          />
         </Form.Item>
-        <Form.Item style={{ marginLeft: "300px" }}>
-          <span>外卖保</span>
-          <Switch />
-          <span>准时达</span>
-          <Switch />
-          <span>开发票</span>
-          <Switch />
-        </Form.Item>
-        <Form.Item label="配送费" name="float_delivery_fee">
-          <InputNumber min={0} max={20} defaultValue={5} onChange={onChange} />
-        </Form.Item>
-        <Form.Item label="起送价" name="float_minimum_order_amount">
+        <Form.Item
+          label="起送价"
+          name="float_minimum_order_amount"
+          name="is_premium"
+        >
           <InputNumber
             min={0}
             max={100}
             defaultValue={20}
-            onChange={onChange}
+            onChange={(value) => {
+              formData.float_minimum_order_amount = value;
+            }}
           />
         </Form.Item>
-        <Form.Item label="营业时间" name="Time">
-          <TimePicker placeholder="起始时间" format={format} />
-          <TimePicker placeholder="结束时间" format={format} />
-        </Form.Item>
-        <Form.Item label="上传店铺头像">
+        <div style={{ marginLeft: "158px" }}>
+          <span style={{ marginRight: "82px" }}>营业时间:</span>
+          <Form.Item>
+            <TimePicker
+              placeholder="起始时间"
+              format={format}
+              name="startTime"
+              onChange={(a, b) => {
+                console.log(a, b);
+                formData.startTime=b
+              }}
+            />
+          </Form.Item>
+          <Form.Item>
+            <TimePicker placeholder="结束时间" format={format} name="endTime"
+            onChange={(a,b)=>{
+formData.endTime=b
+            }} />
+          </Form.Item>
+        </div>
+
+        <Form.Item label="上传店铺头像" name="image_path">
           <Upload
             name="avatar"
             listType="picture-card"
@@ -514,7 +620,7 @@ function AddShop() {
             )}
           </Upload>
         </Form.Item>
-        <Form.Item label="上传营业执照">
+        <Form.Item label="上传营业执照" name="business_license_image">
           <Upload
             name="avatar"
             listType="picture-card"
@@ -535,7 +641,10 @@ function AddShop() {
             )}
           </Upload>
         </Form.Item>
-        <Form.Item label="上传餐饮服务许可证">
+        <Form.Item
+          label="上传餐饮服务许可证"
+          name="catering_service_license_image"
+        >
           <Upload
             name="avatar"
             listType="picture-card"
@@ -556,11 +665,11 @@ function AddShop() {
             )}
           </Upload>
         </Form.Item>
-        <Form.Item label="优惠活动">
+        <Form.Item label="优惠活动" name="activities">
           <Select
             defaultValue={activityValue}
             style={{ width: 120 }}
-            onChange={selectActivity}
+            onChange={selectActivityfun}
             placeholder="activityValue"
           >
             {options.map((item) => (
@@ -591,7 +700,6 @@ function AddShop() {
             立即创建
           </Button>
         </Form.Item>
-        
       </Form>
       {/* <ModalForm visible={visible} onCancel={hideUserModal} /> */}
       {/* </Form.Provider> */}
@@ -627,7 +735,6 @@ function AddShop() {
           </Form.Item>
         </Form>
       </Modal>
-      
     </div>
   );
 }

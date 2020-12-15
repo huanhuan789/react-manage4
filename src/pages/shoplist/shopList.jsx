@@ -157,8 +157,8 @@ function ShopList(props) {
   const initData = async () => {
       try {
         //------------------------------------------ city接口504
-        //  city = await cityGuess();
-        
+        //  const cityvalue = await cityGuess();
+        // console.log(cityvalue)
         const countData = await getResturantsCount();
         if (countData.status == 1) {
           setcount(count);

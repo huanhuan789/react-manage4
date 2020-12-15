@@ -19,6 +19,7 @@ import {
   Table,
   Popconfirm,
   Modal,
+  Tag
 } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 const { Option } = Select;
@@ -41,7 +42,9 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 function AddGoods(props) {
-  const [form] = Form.useForm();
+  const [formaddspecs] = Form.useForm();
+  const [FormAddFoodSubmit]=Form.useForm()
+  const [formaddCategory]=Form.useForm();
   const columns = [
     {
       title: "规格",
@@ -86,6 +89,7 @@ function AddGoods(props) {
               <Button type="danger" size="small" onClick={()=>{
                 let foodFormvalue=JSON.parse(JSON.stringify(foodForm))
                 foodFormvalue.specs.splice(index,1);
+                // foodForm=foodFormvalue
                 setfoodForm(foodFormvalue)
                 console.log(foodFormvalue.specs)
               }}>
@@ -104,13 +108,13 @@ function AddGoods(props) {
   // const [baseImgPath, setBaseImaPath] = useState('')
   let [restaurant_id, setrestaurant_id] = useState("");
   const [visible, setVisible] = useState(false);
-  const [categoryForm, setcategoryForm] = useState({
+  let [categoryForm, setcategoryForm] = useState({
     categoryList: [],
     categorySelect: "",
     name: "",
     description: "",
   });
-  const [foodForm, setfoodForm] = useState({
+  let [foodForm, setfoodForm] = useState({
     name: "",
     description: "",
     image_path: "",
@@ -172,6 +176,12 @@ function AddGoods(props) {
   const selectValue = () => {
     return categoryForm.categoryList[categoryForm.categorySelect] || {};
   };
+  //
+  const onSelectcategory=(values)=>{
+    console.log(values)
+    categoryForm.categorySelect=values
+console.log(values)
+  }
   // 点击添加食品种类
   const addCategoryFun = () => {
     setshowAddCategory((showAddCategory) => !showAddCategory);
@@ -199,7 +209,7 @@ function AddGoods(props) {
       // showAddCategory = false;
       setshowAddCategory(false);
       message.success("添加成功");
-      form.resetFields();
+      formaddCategory.resetFields();
     }
     // }catch(err){
     //     console.log(err)
@@ -218,6 +228,7 @@ function AddGoods(props) {
       });
       console.log(result.category_list);
       const cateGory = { ...categoryForm };
+      categoryForm.categoryList=result.category_list
       cateGory.categoryList = result.category_list;
       console.log(cateGory);
       setcategoryForm(cateGory);
@@ -240,9 +251,10 @@ function AddGoods(props) {
       setLoading(false);
       // setBaseImaPath(imageUrl);
       console.log(info);
-      // const foodFo = JSON.parse(JSON.stringify(foodForm)) 
-      foodForm.image_path = info.file.response.image_path;
-      setfoodForm(foodForm)
+      const foodFo = JSON.parse(JSON.stringify(foodForm)) 
+      foodFo.image_path = info.file.response.image_path;
+      foodForm.image_path=info.file.reponse.image_path
+      setfoodForm(foodFo)
       //   });
     }
   };
@@ -253,7 +265,7 @@ function AddGoods(props) {
     </div>
   );
   //添加规格弹出框 确认  values输出带有name 和 description
-  const addspecs = (values) => {
+  const addspecssubmit = (values) => {
     console.log(values);
     // const specsvalues={...specsForm}
     // specsvalues= values;
@@ -268,6 +280,7 @@ function AddGoods(props) {
       packing_fee: values.packing_fee,
       price: values.price,
     });
+    // foodForm=foodFo
     console.log(foodFo);
     setfoodForm(foodFo);
     console.log(foodForm)
@@ -280,7 +293,7 @@ function AddGoods(props) {
     //   console.log(specs);
     //   setSpecs(specs);
     // })
-    form.resetFields();
+    formaddspecs.resetFields();
 
     //    const specsvalues={...specsForm}
     // specsvalues.specs = "";
@@ -293,32 +306,47 @@ function AddGoods(props) {
   const handleDelete = () => {};
   //
   const onChange = () => {};
-  const addFood = async (values) => {
+  const addFoodsubmit = async (values) => {
+
     console.log(values);
     if (values) {
+    console.log(foodForm)
+    foodForm.activity=values.activity
+    foodForm.name=values.name
+    foodForm.description=values.description
+    // values.forEach((item,key)=>{
+    //   
+    //   // foodForm.att
+    // })
+    console.log(values)
+    console.log(selectValue())
+const selectValueid=selectValue()
       const params = {
         ...foodForm,
-        category_id: selectValue.id,
+        category_id: selectValueid.id,
         restaurant_id: restaurant_id,
       };
+      console.log(params)
       const result = await addFood(params);
       if (result.status == 1) {
         console.log(result);
         message.success("添加成功");
-        foodForm = {
-          name: "",
-          description: "",
-          image_path: "",
-          activity: "",
-          attributes: [],
-          specs: [
-            {
-              specs: "默认",
-              packing_fee: 0,
-              price: 20,
-            },
-          ],
-        };
+   FormAddFoodSubmit.resetFields()
+
+        // foodForm = {
+        //   name: "",
+        //   description: "",
+        //   image_path: "",
+        //   activity: "",
+        //   attributes: [],
+        //   specs: [
+        //     {
+        //       specs: "默认",
+        //       packing_fee: 0,
+        //       price: 20,
+        //     },
+        //   ],
+        // };
       } else {
         message.error(result.message);
       }
@@ -347,6 +375,14 @@ function AddGoods(props) {
   const handleOk = () => {
     props.history.push("/manage/shopList");
   };
+  const handleAttributes=(values)=>{
+    console.log(values)
+ 
+    
+   
+    foodForm.attributes=values
+    console.log(foodForm)
+  }
   // const format = 'HH:mm';
   return (
     <div>
@@ -365,7 +401,7 @@ function AddGoods(props) {
         >
           <div className="category_select">
             <Form.Item label="食品种类">
-              <Select style={{ width: "100%" }}>
+              <Select style={{ width: "100%" }} onSelect={onSelectcategory}>
                 {categoryForm.categoryList.map((item, index) => (
                   <Option key={index}>{item.name}</Option>
                 ))}
@@ -376,7 +412,7 @@ function AddGoods(props) {
             className={`add_category_row${showAddCategory ? "showEdit" : ""}`}
           >
             <Form
-              form={form}
+              form={formaddCategory}
               name="addCategory"
               className="add_category"
               onFinish={submitcategoryForm}
@@ -408,9 +444,10 @@ function AddGoods(props) {
         </div>
         <header className="form_header">添加食品</header>
         <Form
+        Form={FormAddFoodSubmit}
           label-width="110px"
           className="form food_form"
-          onFinish={addFood}
+          onFinish={addFoodsubmit}
           onFinishFailed={addFoodfailed}
         >
           <Form.Item
@@ -429,10 +466,9 @@ function AddGoods(props) {
             <Input />
           </Form.Item>
 
-          <Form.Item label="上传食品图片">
+          <Form.Item label="上传食品图片" name="image_path">
             <Upload
               className="avatar-uploader"
-              name="avatar"
               listType="picture-card"
               className="avatar-uploader"
               showUploadList={false}
@@ -451,14 +487,30 @@ function AddGoods(props) {
               )}
             </Upload>
           </Form.Item>
-          <Form.Item label="食品特点">
+          {/* <Form.Item label="食品特点" name='attributes'>
             <Select
               defaultValue={foodForm.attributes}
+              labelInValue={true}
               style={{ width: 120 }}
               placeholder="请选择"
             >
-              {attributes.map((item) => (
-                <Option key={item.value}>{item.lable}</Option>
+              {attributes.map((item,index) => (
+                <Option key={item.value}>{item.label}</Option>
+              ))}
+            </Select>
+          </Form.Item> */}
+          <Form.Item label="食品特点" name='attributes'>
+            <Select
+             mode="multiple"
+              defaultValue={foodForm.attributes}
+              style={{ width: 300 }}
+              placeholder="请选择"
+              onChange={handleAttributes}
+            >
+              {attributes.map((item,index) => (
+                <Option key={item.value}>
+                {item.label}
+             </Option>
               ))}
             </Select>
           </Form.Item>
@@ -532,7 +584,7 @@ function AddGoods(props) {
           footer={null}
           onCancel={() => setdialogFormVisible(false)}
         >
-          <Form form={form} initialValues={specsForm} onFinish={addspecs}>
+          <Form form={formaddspecs} initialValues={specsForm} onFinish={addspecssubmit}>
             <Form.Item
               label="规格"
               lable-width="100px"

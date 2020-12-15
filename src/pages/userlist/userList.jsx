@@ -12,6 +12,7 @@ function UserList() {
   const columns = [
     {
       title: '#',
+      width: 220,
       render: (text, record, index) => `${index + 1}`
     },
     {
@@ -22,9 +23,10 @@ function UserList() {
     },
     {
       title: '用户姓名',
-      width: 220,
+      width: 300,
       dataIndex: 'username',
       key: 'username',
+      ellipsis:true
     },
 
 
